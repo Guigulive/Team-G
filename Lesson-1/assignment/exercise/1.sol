@@ -1,5 +1,5 @@
 //***
-// * @Author: 花夏 <huaxia>
+// * @Author: 花夏>
 // * @Date:   2018-03-07T15:27:43+08:00
 // * @Email:  liubiao@itoxs.com
 // * @Last modified by:   huaxia
