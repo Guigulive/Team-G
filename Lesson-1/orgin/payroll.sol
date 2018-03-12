@@ -11,7 +11,7 @@ contract Payroll {
     function Payroll() {
         owner = msg.sender;
     }
-    
+
     function updateEmployee(address e, uint s) {
         require(msg.sender == owner);
         
@@ -36,7 +36,6 @@ contract Payroll {
     function hasEnoughFund() returns (bool) {
         return calculateRunway() > 0;
     }
-    
     function getPaid() {
         require(msg.sender == employee);
         
