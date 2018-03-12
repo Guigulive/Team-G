@@ -47,16 +47,9 @@ contract CompensationSys {
     
     // getwMyWage 获取我应得的薪资
     function getwMyWage() {
-        uint curPayDay = lastPayDay + payStep;
-        if (curPayDay > now) {
-            // 这里不写=是因为=容易被攻击哦，非要掐那个点领工资？
-            revert();
+        if (lastPayDay + payStep < now) {
+            lastPayDay += payStep;
+            huaxia.transfer(salary);
         }
-        if (!hasEnoughPay()) {
-            revert();
-        }
-        // 为啥这俩个分开写？不使用 || ？我分别弹出消息提醒用户啊！
-        astPayDay += payStep;
-        huaxia.transfer(salary);
     }
 }

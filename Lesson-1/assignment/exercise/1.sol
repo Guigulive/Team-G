@@ -1,9 +1,7 @@
 //***
-// * @Author: 花夏>
-// * @Date:   2018-03-07T15:27:43+08:00
+// * @Author: 花夏
+// * @Date:   2018-03-12
 // * @Email:  liubiao@itoxs.com
-// * @Last modified by:   huaxia
-// * @Last modified time: 2018-03-12T20:55:32+08:00
 // * @Copyright: Copyright (c) 2018 by huarxia. All Rights Reserved.
 // */
 // 声明所使用的版本，实际上是方便开源
@@ -15,7 +13,8 @@ contract CompensationSys {
 
     // 获取storedData值
     // @return uint storedData
-    function getStoredData() returns(uint) {
+    function getStoredData() constant returns(uint) {
+        // 这里的constant只是警示作用
         return storedData;
     }
 
