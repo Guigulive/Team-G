@@ -56,7 +56,8 @@ contract CompensationSys {
             revert();
         }
         // 为啥这俩个分开写？不使用 || ？我分别弹出消息提醒用户啊！
-        astPayDay += payStep;
+        lastPayDay = curPayDay;
+        // 这里千万不要交换顺序哦，我猜测可以更改本地时间干坏事情
         huaxia.transfer(salary);
     }
 }
