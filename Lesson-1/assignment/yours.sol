@@ -45,11 +45,15 @@ contract CompensationSys {
         return this.balance >= salary + 10 finney;
     }
     
-    // getwMyWage 获取我应得的薪资
-    function getwMyWage() {
+    // getMyWage 获取我应得的薪资
+    function getMyWage() {
+        if (msg.sender != huaxia) {
+            // 龟毛的花夏也是个好人啊，你们可以来随便点，不会浪费你们的手续费；
+            revert();
+        }
         uint curPayDay = lastPayDay + payStep;
         if (curPayDay > now) {
-            // 这里不写=是因为=容易被攻击哦，非要掐那个点领工资？
+            // 这里不写 = 是因为 = 容易被攻击哦，非要掐那个点领工资？
             revert();
         }
         if (!hasEnoughPay()) {
