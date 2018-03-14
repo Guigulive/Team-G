@@ -76,6 +76,7 @@ contract Payroll {
 
         uint payment = salary * (now - lastPayday) / payDuration;
         newAddress.transfer(payment);
+        lastPayday = now;
 
         return true;
     }
@@ -85,6 +86,10 @@ contract Payroll {
 
         uint positoinToDelete = employee[e].employeePoolIndex;
         address addressToMove = employeePool[employeePool.length - 1];
+
+        uint payment = salary * (now - lastPayday) / payDuration;
+        e.transfer(payment);
+        lastPayday = now;
 
         employeePool[positoinToDelete] = addressToMove;
         employee[addressToMove].employeePoolIndex = positoinToDelete;
