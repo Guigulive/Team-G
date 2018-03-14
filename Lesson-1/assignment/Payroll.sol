@@ -1,3 +1,8 @@
+/**
+ * Author: JustinLee
+ * Date: 2018.03.11
+ * Content: 单员工薪酬系统
+ */
 pragma solidity ^0.4.14;
 
 contract Payroll {
