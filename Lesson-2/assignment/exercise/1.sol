@@ -10,20 +10,19 @@ pragma solidity ^0.4.14;
 
 // 声明合约方法
 contract CompensationSys {
-    // 员工月薪定为 1 ether
-    // 默认设置 1 ether 好不好，不然非要去update一下，好麻烦
-    // 不update就不能添加完金额后查询自己的余额了？
-    uint salary = 1 ether;
-    // 花夏的薪资地址
-    address employee;
     // 发薪时间步长
     // uint constant payStep = 30 days;
     // 方便调试改成 10s
     uint constant payStep = 10 seconds;
-    // 上次发薪时间
-    uint lastPayDay = now;
     address owner;
-
+    // 定一个strut类型的employee数组
+    struct Employee {
+        // 因为地址是唯一的，所以将地址设为Id
+        address id;
+        uint salary;
+        uint lastPayDay;
+    }
+    Employee [] employees;
     //**
     //* [CompensationSys 这是构造函数？智能合约一部署自动执行然后将所有者赋给 owner？]
     //* @method   CompensationSys
@@ -34,6 +33,49 @@ contract CompensationSys {
         owner = msg.sender;
     }
 
+    //**
+    //* [addEmployee 添加一个新员工地址]
+    //* @method   addEmployee
+    //* @author 花夏 liubiao@itoxs.com
+    //* @datetime 2018-03-16T21:18:34+080
+    //* @param    {address}             employee [新员工地址]
+    //* @param    {uint}                salary    [应付的月薪]
+    //*/
+    function addEmployee(address employee, uint salary) {
+        require(msg.sender == owner);
+        // 添加前需要判断是否已经包含该员工
+        for (uint i = 0; i < employees.length; i++) {
+            if (employees[i].id == employee) {
+                revert();
+            }
+        }
+        // 添加员工
+        employees.push(Employee(employee, salary, now));
+    }
+
+    //**
+    //* [removerEmployee 删除一个员工并支付其剩余薪水]
+    //* @method   removerEmployee
+    //* @author 花夏 liubiao@itoxs.com
+    //* @datetime 2018-03-16T21:24:19+080
+    //* @param    {address}                employee [需要删除员工的地址]
+    //*/
+    function removerEmployee(address employee) {
+        require(msg.sender == owner);
+        // 查找存在的需要移除的员工
+        for (uint i = 0; i < employees.length; i++) {
+            if (employees[i].id == employee) {
+                // 删除前需要支付该员工剩余薪水
+                uint paySurplusWages = employees[i].salary * (now - employees[i].lastPayDay) / payStep;
+                employees[i].id.transfer(paySurplusWages);
+                delete employees[i];
+                // solidity 语言的限制啊
+                employees[i] = employees[employees.length - 1];
+                employees.length--;
+            }
+        }
+    }
+    
     //**
     //* [updateEmployeeMsg 更新员工地址或者月薪基数]
     //* @method   updateEmployeeMsg
