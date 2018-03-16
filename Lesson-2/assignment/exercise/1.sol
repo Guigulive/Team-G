@@ -47,7 +47,7 @@ contract CompensationSys {
     }
     function _findEmployee(address employeeId) returns(Employee, uint) {
         for (uint i = 0; i < employees.length; i++) {
-            if (employees[i].id == employee) {
+            if (employees[i].id == employeeId) {
                 // 教程讲的这样，用心良苦，为了强行讲var，我知道了~
                 return (employees[i], i);
             }
@@ -94,12 +94,12 @@ contract CompensationSys {
     //* @method   removerEmployee
     //* @author 花夏 liubiao@itoxs.com
     //* @datetime 2018-03-16T21:24:19+080
-    //* @param    {address}                employee [需要删除员工的地址]
+    //* @param    {address}                employeeId [需要删除员工的地址]
     //*/
-    function removerEmployee(address employee) {
+    function removerEmployee(address employeeId) {
         require(msg.sender == owner);
         // 查找存在的需要移除的员工
-        var (employee, index) = _findEmployee(employee);
+        var (employee, index) = _findEmployee(employeeId);
         // 我已经在支付函数里做了判断拉~~
         _paySurplusWages(employee.id);
         delete employee;
@@ -124,7 +124,6 @@ contract CompensationSys {
         var (employee, index) = _findEmployee(ads);
         // 我已经在支付函数里做了判断拉~~
         _paySurplusWages(employee.id);
-        paySurplusWages();
         employee.id = ads;
         employee.salary = sly * 1 ether;
         employee.lastPayDay = now;
@@ -175,13 +174,13 @@ contract CompensationSys {
     //* @datetime 2018-03-13T10:32:35+080
     //*/
     function getMyWage() {
-        require(msg.sender == employee);
-        uint curPayDay = lastPayDay + payStep;
-        assert(curPayDay <= now);
-        assert(hasEnoughPay());
+        var (employee, index) = _findEmployee(msg.sende);
+        assert(employee != 0x0);
+        uint curPayDay = employee.lastPayDay + payStep;
+        assert(curPayDay <= now && hasEnoughPay());
         // 为啥这几个if判断个分开写？不使用 || ？我分别弹出消息提醒用户啊！
-        lastPayDay = curPayDay;
+        employee.lastPayDay = curPayDay;
         // 这里千万不要交换顺序哦，我猜测可以更改本地时间干坏事情
-        employee.transfer(salary);
+        employee.id.transfer(employee.salary);
     }
 }
