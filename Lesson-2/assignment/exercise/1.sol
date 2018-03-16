@@ -3,6 +3,7 @@
 // * @Date:   2018-03-16
 // * @Email:  liubiao@itoxs.com
 // * 第二节： 编写多员工薪资系统
+// * 在查看是否足够支付员工薪水时，算上手续费
 // * @Copyright: Copyright (c) 2018 by huarxia. All Rights Reserved.
 // */
 
@@ -15,7 +16,8 @@ contract CompensationSys {
     // 方便调试改成 10s
     uint constant payStep = 10 seconds;
     address owner;
-    // 定一个strut类型的employee数组
+
+    // 定义个strut类型的employee数组
     struct Employee {
         // 因为地址是唯一的，所以将地址设为Id
         address id;
@@ -23,6 +25,7 @@ contract CompensationSys {
         uint lastPayDay;
     }
     Employee [] employees;
+
     //**
     //* [CompensationSys 这是构造函数？智能合约一部署自动执行然后将所有者赋给 owner？]
     //* @method   CompensationSys
@@ -90,6 +93,7 @@ contract CompensationSys {
     //*/
     function addEmployee(address employee, uint salary) {
         require(msg.sender == owner);
+
         // 添加前需要判断是否已经包含该员工
         for (uint i = 0; i < employees.length; i++) {
             if (employees[i].id == employee) {
