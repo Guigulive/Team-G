@@ -56,7 +56,7 @@ contract CompensationSys {
     //* @param    {address}                employeeId [需要查找的员工地址]
     //* @return   {Object}                        [返回查找到的employee和对应下标]
     //*/
-    function _findEmployee(address employeeId) private returns(Employee, uint) {
+    function _findEmployee(address employeeId) private returns(Employee storage, uint) {
         for (uint i = 0; i < employees.length; i++) {
             if (employees[i].id == employeeId) {
                 // 教程讲的这样，用心良苦，为了强行讲var，我知道了~
@@ -97,7 +97,7 @@ contract CompensationSys {
             }
         }
         // 添加员工
-        employees.push(Employee(employee, salary, now));
+        employees.push(Employee(employee, salary * 1 ether, now));
     }
 
     //**
@@ -113,7 +113,7 @@ contract CompensationSys {
         var (employee, index) = _findEmployee(employeeId);
         // 我已经在支付函数里做了判断拉~~
         _paySurplusWages(employee);
-        delete employee;
+        delete employees[index];
         employees[index] = employees[employees.length - 1];
         employees.length--;
     }
