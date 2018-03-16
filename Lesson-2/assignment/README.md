@@ -38,3 +38,6 @@ function calculateRunway() returns (uint) {
         return this.balance / totalSalary;
     }
 ```
+
+优化之后每次的gas消耗为：transaction cost：22124， execution cost：852
+
