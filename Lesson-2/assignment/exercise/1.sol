@@ -34,6 +34,26 @@ contract CompensationSys {
     }
 
     //**
+    //* [_paySurplusWages 内置支付剩余薪水函数，有木有和js类似？]
+    //* @method   _paySurplusWages
+    //* @author 花夏 liubiao@itoxs.com
+    //* @datetime 2018-03-16T21:44:11+080
+    //* @param    {Employee}                employee [需要支付的员工数据信息]
+    //*/
+    function _paySurplusWages(Employee employee) {
+        assert(employee.id != 0x0);
+        uint paySurplusWages = employee.salary * (now - employee.lastPayDay) / payStep;
+        employee.id.transfer(paySurplusWages);
+    }
+    function _findEmployee(address employeeId) returns(Employee, uint) {
+        for (uint i = 0; i < employees.length; i++) {
+            if (employees[i].id == employee) {
+                // 教程讲的这样，用心良苦，为了强行讲var，我知道了~
+                return (employees[i], i);
+            }
+        }
+    }
+    //**
     //* [addEmployee 添加一个新员工地址]
     //* @method   addEmployee
     //* @author 花夏 liubiao@itoxs.com
@@ -63,17 +83,12 @@ contract CompensationSys {
     function removerEmployee(address employee) {
         require(msg.sender == owner);
         // 查找存在的需要移除的员工
-        for (uint i = 0; i < employees.length; i++) {
-            if (employees[i].id == employee) {
-                // 删除前需要支付该员工剩余薪水
-                uint paySurplusWages = employees[i].salary * (now - employees[i].lastPayDay) / payStep;
-                employees[i].id.transfer(paySurplusWages);
-                delete employees[i];
-                // solidity 语言的限制啊
-                employees[i] = employees[employees.length - 1];
-                employees.length--;
-            }
-        }
+        var (employee, index) = _findEmployee(employee);
+        // 我已经在支付函数里做了判断拉~~
+        _paySurplusWages(employee.id);
+        delete employee;
+        employees[employees.index] = employees[employees.length - 1];
+        employees.length--;
     }
     
     //**
@@ -89,23 +104,14 @@ contract CompensationSys {
     function updateEmployeeMsg(address ads, uint sly) {
         // 检查是否合约所有者，不是的话是不允许改变的哦，要不然嘻嘻嘻~~~
         require(msg.sender == owner);
+        // 查找存在的需要移除的员工
+        var (employee, index) = _findEmployee(ads);
+        // 我已经在支付函数里做了判断拉~~
+        _paySurplusWages(employee.id);
         paySurplusWages();
-        employee = ads;
-        salary = sly * 1 ether;
-        lastPayDay = now;
-    }
-    
-    //**
-    //* [paySurplusWages 在更新地址或者月薪时支付剩余余额]
-    //* @method   paySurplusWages
-    //* @author 花夏 liubiao@itoxs.com
-    //* @datetime 2018-03-13T10:18:51+080
-    //*/
-    function paySurplusWages() {
-        if (employee != 0x0) {
-             uint paySurplusWages = salary * (now - lastPayDay) / payStep;
-             employee.transfer(paySurplusWages);
-        }
+        employee.id = ads;
+        employee.salary = sly * 1 ether;
+        employee.lastPayDay = now;
     }
     
     //**
