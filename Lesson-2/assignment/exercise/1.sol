@@ -38,14 +38,25 @@ contract CompensationSys {
     //* @method   _paySurplusWages
     //* @author 花夏 liubiao@itoxs.com
     //* @datetime 2018-03-16T21:44:11+080
+    //* private  内部函数请声明私有化
     //* @param    {Employee}                employee [需要支付的员工数据信息]
     //*/
-    function _paySurplusWages(Employee employee) {
+    function _paySurplusWages(Employee employee) private {
         assert(employee.id != 0x0);
         uint paySurplusWages = employee.salary * (now - employee.lastPayDay) / payStep;
         employee.id.transfer(paySurplusWages);
     }
-    function _findEmployee(address employeeId) returns(Employee, uint) {
+
+    //**
+    //* [_findEmployee 根据提供地址查找员工]
+    //* @method   _findEmployee
+    //* @author 花夏 liubiao@itoxs.com
+    //* @datetime 2018-03-16T22:18:44+080
+    //* private  内部函数请声明私有化
+    //* @param    {address}                employeeId [需要查找的员工地址]
+    //* @return   {Object}                        [返回查找到的employee和对应下标]
+    //*/
+    function _findEmployee(address employeeId) private returns(Employee, uint) {
         for (uint i = 0; i < employees.length; i++) {
             if (employees[i].id == employeeId) {
                 // 教程讲的这样，用心良苦，为了强行讲var，我知道了~
@@ -101,9 +112,9 @@ contract CompensationSys {
         // 查找存在的需要移除的员工
         var (employee, index) = _findEmployee(employeeId);
         // 我已经在支付函数里做了判断拉~~
-        _paySurplusWages(employee.id);
+        _paySurplusWages(employee);
         delete employee;
-        employees[employees.index] = employees[employees.length - 1];
+        employees[index] = employees[employees.length - 1];
         employees.length--;
     }
     
@@ -123,7 +134,7 @@ contract CompensationSys {
         // 查找存在的需要移除的员工
         var (employee, index) = _findEmployee(ads);
         // 我已经在支付函数里做了判断拉~~
-        _paySurplusWages(employee.id);
+        _paySurplusWages(employee);
         employee.id = ads;
         employee.salary = sly * 1 ether;
         employee.lastPayDay = now;
@@ -174,8 +185,8 @@ contract CompensationSys {
     //* @datetime 2018-03-13T10:32:35+080
     //*/
     function getMyWage() {
-        var (employee, index) = _findEmployee(msg.sende);
-        assert(employee != 0x0);
+        var (employee, index) = _findEmployee(msg.sender);
+        assert(employee.id != 0x0);
         uint curPayDay = employee.lastPayDay + payStep;
         assert(curPayDay <= now && hasEnoughPay());
         // 为啥这几个if判断个分开写？不使用 || ？我分别弹出消息提醒用户啊！
