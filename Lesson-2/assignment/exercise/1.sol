@@ -53,6 +53,22 @@ contract CompensationSys {
             }
         }
     }
+
+    //**
+    //* [getTotalWages 获取每个步长需要支付的总额和总员工数]
+    //* @method   getTotalWages
+    //* @author 花夏 liubiao@itoxs.com
+    //* @datetime 2018-03-16T22:04:38+080
+    //* @return   {Obejct}                [每个步长需要支付的总额和总员工数]
+    //*/
+    function getTotalWages() returns(uint, uint) {
+        uint total;
+        uint len = employees.length;
+        for (uint i = 0; i < len; i++) {
+            total += employees[i].salary;
+        }
+        return (total, len);
+    }
     //**
     //* [addEmployee 添加一个新员工地址]
     //* @method   addEmployee
@@ -134,7 +150,11 @@ contract CompensationSys {
     //* @return   {uint}                [返回合约地址还能支付薪水的次数]
     //*/
     function getPayTimes() returns(uint) {
-        return this.balance / salary;
+        var (totalWages, num) = getTotalWages();
+        // ether == 10^18 wei
+        // finney == 10^15 wei
+        // 然鹅~~ 难道发薪不要手续费？我再加上0.01ether的手续费吧。保证一下。
+        return this.balance / (totalWages + num * 10 finney);
     }
 
     //**
@@ -145,10 +165,7 @@ contract CompensationSys {
     //* @return   {Boolean}               [返回是否足够支付]
     //*/
     function hasEnoughPay() returns(bool) {
-        // ether == 10^18 wei
-        // finney == 10^15 wei
-        // 然鹅~~ 难道发薪不要手续费？我再加上0.01ether的手续费吧。保证一下。
-        return this.balance >= salary + 10 finney;
+        return getPayTimes() >= 1;
     }
 
     //**
