@@ -8,3 +8,19 @@
 - 如何优化calculateRunway这个函数来减少gas的消耗？
 提交：智能合约代码，gas变化的记录，calculateRunway函数的优化
 
+--- 
+The reason of gas variation is that the `for` loop reads more data as the number of employees increases. 
+|        | Transaction gas | Execution gas  |
+| :----: |:-----:| :---:|
+| first  | 23162 | 1890 |
+| second | 24053 | 2781 |
+| third  | 24944 | 3672 |
+| forth  | 25835 | 4563 |
+| fifth  | 26726 | 5454 |
+| sixth  | 27617 | 6345 |
+| seventh| 28508 | 7236 |
+| eighth | 29399 | 8127 |
+| ninth  | 30290 | 9018 |
+| tenth  | 31181 | 9909 |
+---
+Set a global variable to track total salary. After the implementation, the gas becomes constant: `transaction gas 22418 with execution gas 1146`
