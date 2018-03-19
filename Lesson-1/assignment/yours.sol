@@ -124,14 +124,11 @@ contract CompensationSys {
     //* @return   {Boolean}               [返回是否足够支付]
     //*/
     function hasEnoughPay() returns(bool) {
-        // ether == 10^18 wei
-        // finney == 10^15 wei
-        // 示例中采用 getPayTimes() > 0
         // 我私认为，程序是方便人读的，何不变成 getPayTimes() >= 1？
         // 这样是不是读到程序就知道是至少需要一个月的余额才行？
 
         // 然鹅~~ 难道发薪不要手续费？我再加上0.01ether的手续费吧。保证一下。
-        return this.balance >= salary + 10 finney;
+        return getPayTimes() >= 1;
     }
 
     //**

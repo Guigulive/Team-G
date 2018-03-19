@@ -17,7 +17,7 @@ contract CompensationSys {
     // 方便调试改成 10s
     uint constant payStep = 10 seconds;
     address owner;
-
+    uint private totalSalary = 0;
     // 定义个strut类型的employee数组
     struct Employee {
         // 因为地址是唯一的，所以将地址设为Id
@@ -63,46 +63,33 @@ contract CompensationSys {
     function _findEmployee(address employeeId) private returns(Employee storage, uint) {
         for (uint i = 0; i < employees.length; i++) {
             if (employees[i].id == employeeId) {
-                // 教程讲的这样，用心良苦，为了强行讲var，我知道了~
                 return (employees[i], i);
             }
         }
     }
 
     //**
-    //* [getTotalWages 获取每个步长需要支付的总额和总员工数]
-    //* @method   getTotalWages
-    //* @author 花夏 liubiao@itoxs.com
-    //* @datetime 2018-03-16T22:04:38+080
-    //* @return   {Obejct}                [每个步长需要支付的总额和总员工数]
-    //*/
-    function getTotalWages() returns(uint, uint) {
-        uint total;
-        uint len = employees.length;
-        for (uint i = 0; i < len; i++) {
-            total += employees[i].salary;
-        }
-        return (total, len);
-    }
-    //**
     //* [addEmployee 添加一个新员工地址]
     //* @method   addEmployee
     //* @author 花夏 liubiao@itoxs.com
     //* @datetime 2018-03-16T21:18:34+080
-    //* @param    {address}             employee [新员工地址]
+    //* @param    {address}             employeeId [新员工地址]
     //* @param    {uint}                salary    [应付的月薪]
     //*/
-    function addEmployee(address employee, uint salary) {
+    function addEmployee(address employeeId, uint salary) {
         require(msg.sender == owner);
-
         // 添加前需要判断是否已经包含该员工
-        for (uint i = 0; i < employees.length; i++) {
-            if (employees[i].id == employee) {
-                revert();
-            }
+        var (employeeTemp, index) = _findEmployee(employeeId);
+        // 不能这样判断，return调试是owner
+        // assert(employee.id == 0x0 || employee.id == owner);
+        if (employeeTemp.id == 0x0) {
+            // 添加员工
+            Employee memory employee = Employee(employeeId, salary * 1 ether, now);
+            employees.push(employee);
+            // 这里为什么要这样？否则totalSalary会为0
+            // employees.push(Employee(employeeId, salary * 1 ether, now));
+            totalSalary += employee.salary;
         }
-        // 添加员工
-        employees.push(Employee(employee, salary * 1 ether, now));
     }
 
     //**
@@ -118,9 +105,13 @@ contract CompensationSys {
         var (employee, index) = _findEmployee(employeeId);
         // 我已经在支付函数里做了判断拉~~
         _paySurplusWages(employee);
+        uint len = employees.length;
+        totalSalary -= employees[index].salary;
         delete employees[index];
-        employees[index] = employees[employees.length - 1];
-        employees.length--;
+        if (index < len) {
+            employees[index] = employees[len - 1];
+            employees.length--;
+        }
     }
     
     //**
@@ -140,9 +131,11 @@ contract CompensationSys {
         var (employee, index) = _findEmployee(ads);
         // 我已经在支付函数里做了判断拉~~
         _paySurplusWages(employee);
+        totalSalary -= employee.salary;
         employee.id = ads;
         employee.salary = sly * 1 ether;
         employee.lastPayDay = now;
+        totalSalary += employee.salary;
     }
     
     //**
@@ -165,11 +158,7 @@ contract CompensationSys {
     //* @return   {uint}                [返回合约地址还能支付薪水的次数]
     //*/
     function getPayTimes() returns(uint) {
-        var (totalWages, num) = getTotalWages();
-        // ether == 10^18 wei
-        // finney == 10^15 wei
-        // 然鹅~~ 难道发薪不要手续费？我再加上0.01ether的手续费吧。保证一下。
-        return this.balance / (totalWages + num * 10 finney);
+        return this.balance / totalSalary;
     }
 
     //**
