@@ -10,6 +10,19 @@
 
 
 - 第二题：增加 changePaymentAddress 函数，更改员工的薪水支付地址，思考一下能否使用modifier整合某个功能
+```
+modifier onlyEmployee(address employeeId){
+        require(msg.sender == employeeId);
+        _;
+    }
+    
+function changePaymentAddress(address newId) onlyEmployee(msg.sender) {
+        var employee = employees[msg.sender];
+        _partialPaid(employee);
+        employees[msg.sender].id = newId;
+    }
+```
+
 - 第三题（加分题）：自学C3 Linearization, 求以下 contract Z 的继承线
 - contract O
 - contract A is O
