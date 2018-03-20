@@ -60,7 +60,8 @@ contract CompensationSys {
     //* @param    {address}                employeeId [需要查找的员工地址]
     //* @return   {Object}                        [返回查找到的employee和对应下标]
     //*/
-    function _findEmployee(address employeeId) private returns(Employee storage, uint) {
+    function _findEmployee(address employeeId) private returns(Employee, uint) {
+        // for循环遍历结束后会返回storage中slot0上的变量，所以建议强制转换为storage
         for (uint i = 0; i < employees.length; i++) {
             if (employees[i].id == employeeId) {
                 return (employees[i], i);
@@ -80,16 +81,11 @@ contract CompensationSys {
         require(msg.sender == owner);
         // 添加前需要判断是否已经包含该员工
         var (employeeTemp, index) = _findEmployee(employeeId);
-        // 不能这样判断，return调试是owner
-        // assert(employee.id == 0x0 || employee.id == owner);
-        if (employeeTemp.id == 0x0) {
-            // 添加员工
-            Employee memory employee = Employee(employeeId, salary * 1 ether, now);
-            employees.push(employee);
-            // 这里为什么要这样？否则totalSalary会为0
-            // employees.push(Employee(employeeId, salary * 1 ether, now));
-            totalSalary += employee.salary;
-        }
+        assert(employeeTemp.id == 0x0);
+        // 添加员工
+        Employee memory employee = Employee(employeeId, salary * 1 ether, now);
+        employees.push(employee);
+        totalSalary += employee.salary;
     }
 
     //**
@@ -132,10 +128,10 @@ contract CompensationSys {
         // 我已经在支付函数里做了判断拉~~
         _paySurplusWages(employee);
         totalSalary -= employee.salary;
-        employee.id = ads;
-        employee.salary = sly * 1 ether;
-        employee.lastPayDay = now;
-        totalSalary += employee.salary;
+        employees[index].id = ads;
+        employees[index].salary = sly * 1 ether;
+        employees[index].lastPayDay = now;
+        totalSalary += employees[index].salary;
     }
     
     //**
