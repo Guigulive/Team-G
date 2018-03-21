@@ -8,8 +8,9 @@
  */
 
 pragma solidity ^0.4.14;
+import './zeppelin/ownable.sol';
 // 声明合约方法
-contract CompensationSys {
+contract CompensationSys is Ownable {
     // 发薪时间步长
     // uint constant payStep = 30 days;
     // 方便调试改成 10s
@@ -26,23 +27,6 @@ contract CompensationSys {
     // Employee [] employees;
     // 使用map结构方便查询降低gas
     mapping (address => Employee) public employees;
-
-    /**
-     * [CompensationSys 这是构造函数？智能合约一部署自动执行然后将所有者赋给 owner？]
-     * @author 花夏 liubiao@itoxs.com
-     */
-    function CompensationSys() {
-        owner = msg.sender;
-    }
-
-    /**
-     * 定义一个modifier 判断为合约所有者
-     */
-    modifier onlyOwner {
-        require(msg.sender == owner);
-        _;
-    }
-
     /**
      * 定义一个modifier 判断是否包含这个员工
      */
