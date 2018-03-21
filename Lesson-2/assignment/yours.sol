@@ -53,7 +53,9 @@ contract Payroll{
         assert(employee.id != 0x0);
         _partialPaid(employee);
         employees[index].id = employeeId;
+        salarySum -= employees[index].salary
         employees[index].salary = salary * 1 ether;
+        salarySum += employees[index].salary
         employees[index].lastPayDay = now;
     }
     
