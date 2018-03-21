@@ -7,11 +7,22 @@ contract Payroll{
     }
     uint  payDuration = 10 seconds;
     address owner;
-    mapping(address => Employee) employees;
+    mapping(address => Employee) public employees ;
     uint totalSalary;
     
     function Payroll(){
         owner = msg.sender;
+    }
+    
+    modifier onlyOwner{
+        require(msg.sender == owner);
+        _;
+    }
+    
+    modifier employeeExist(address employeeId){
+        var employee =employees[employeeId];
+        assert(employee.id == 0x0);
+        _;
     }
     
     function _partialPaid(Employee employee) private{
@@ -19,28 +30,21 @@ contract Payroll{
         employee.id.transfer(payAmount);
     }
     
-    function addEmployee(address employeeId, uint salary){
-        require(msg.sender == owner);
-        var employee =employees[employeeId];
-        assert(employee.id == 0x0);
+    function addEmployee(address employeeId, uint salary) onlyOwner{
+      
         totalSalary += salary * 1 ether;
         employees[employeeId] = Employee(employeeId, salary * 1 ether,now);
     }
     
-    function removeEmployee(address employeeId){
-        require(msg.sender == owner);
+    function removeEmployee(address employeeId) onlyOwner employeeExist(employeeId){
         var  employee = employees[employeeId];
-        assert(employee.id != 0x0);
         _partialPaid(employee);
         totalSalary -= employees[employeeId].salary;
         delete employees[employeeId];
     }
 
-    function updateEmployee(address employeeId, uint salary){
-        require(msg.sender == owner);
+    function updateEmployee(address employeeId, uint salary) onlyOwner employeeExist(employeeId){
         var employee = employees[employeeId];
-        assert(employee.id == 0x0);
-        
         _partialPaid(employee);
         totalSalary -= employees[employeeId].salary;
         employees[employeeId].salary = salary * 1 ether;
@@ -56,9 +60,13 @@ contract Payroll{
        return this.balance;
    }
 
-  
   function hasEnoughFund() private returns (bool) {
       return caclulateRunway() > 0;
+  }
+  
+  function checkEmployee(address employeeId) returns(uint salary, uint lastPayDay){
+      salary = employees[employeeId].salary;
+      lastPayDay = employees[employeeId].lastPayDay;
   }
   
   function getPaid() public {
