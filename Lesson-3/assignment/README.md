@@ -18,7 +18,6 @@
 
 ![addEmployee](images/addEmployee.png)
 
-
 ![addFund](images/addFund.png)
 
 ![getPayTimes](images/getPayTimes.png)
