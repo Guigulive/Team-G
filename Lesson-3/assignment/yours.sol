@@ -48,20 +48,6 @@ contract CompensationSys is Ownable {
     }
 
     /**
-     * [getEmployeeInfo]         根据员工地址获取对应信息
-     *
-     * @author 花夏 liubiao@itoxs.com
-     * @param  ads [员工地址]
-     * @return     [返回员工的月薪及上次领取工资时间]
-     */
-    function getEmployeeInfo(address ads) returns(uint salary, uint lastPayDay) {
-        var employee = employees[ads];
-        // return (employee.salary, employee.lastPayDay);
-        // 可以使用直接飞返回值形参赋值方法
-        salary = employee.salary;
-        lastPayDay = employee.lastPayDay;
-    }
-    /**
      * [addEmployee 添加一个新员工地址]
      * @author 花夏 liubiao@itoxs.com
      * @param  employeeId [新员工地址]
