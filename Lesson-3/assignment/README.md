@@ -36,3 +36,7 @@
 ![removerEmployee](images/removerEmployee.png)
 
 ![getMyWage](images/getMyWage.png)
+
+![changePaymentAddress-1](images/changePaymentAddress-1.png)
+
+![changePaymentAddress-2](images/changePaymentAddress-2.png)

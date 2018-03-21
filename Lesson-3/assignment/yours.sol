@@ -35,6 +35,15 @@ contract CompensationSys is Ownable {
         assert(employee.id != 0x0);
         _;
     }
+
+    /**
+     *  根据传入的 msg.sender判断是否具有操作权限
+     */
+    modifier isEmpolyee(address employeeId) {
+        var employee = employees[employeeId];
+        assert(employee.id == employeeId);
+        _;
+    }
     /**
      * [_paySurplusWages 内置支付剩余薪水函数，有木有和js类似？]
      * @author 花夏 liubiao@itoxs.com
@@ -93,6 +102,17 @@ contract CompensationSys is Ownable {
         employees[ads].salary = sly * 1 ether;
         employees[ads].lastPayDay = now;
         totalSalary += employees[ads].salary;
+    }
+
+    /**
+     * [changePaymentAddress]  更改员工薪水地址，这个函数要求只能员工自己能调用，老板不能调用
+     *
+     * @author 花夏 liubiao@itoxs.com
+     * @param  ads [新地址]
+     * @return     [description]
+     */
+    function changePaymentAddress(address ads) isEmpolyee(msg.sender) {
+        employees[msg.sender].id = ads;
     }
     
     /**
