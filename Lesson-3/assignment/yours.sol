@@ -25,7 +25,7 @@ contract CompensationSys {
     }
     // Employee [] employees;
     // 使用map结构方便查询降低gas
-    mapping (address => Employee) employees;
+    mapping (address => Employee) public employees;
 
     /**
      * [CompensationSys 这是构造函数？智能合约一部署自动执行然后将所有者赋给 owner？]
@@ -36,13 +36,29 @@ contract CompensationSys {
     }
 
     /**
+     * 定义一个modifier 判断为合约所有者
+     */
+    modifier onlyOwner {
+        require(msg.sender == owner);
+        _;
+    }
+
+    /**
+     * 定义一个modifier 判断是否包含这个员工
+     */
+    modifier employeeExist(address ads) {
+        var employee = employees[ads];
+        assert(employee.id != 0x0);
+        _;
+    }
+    /**
      * [_paySurplusWages 内置支付剩余薪水函数，有木有和js类似？]
      * @author 花夏 liubiao@itoxs.com
      * private 内部函数请声明私有化
      * @param  employee [需要支付的员工数据信息]
      */
-    function _paySurplusWages(Employee employee) private {
-        assert(employee.id != 0x0);
+    function _paySurplusWages(Employee employee) private employeeExist(employee.id) {
+        // assert(employee.id != 0x0);
         uint paySurplusWages = employee.salary * (now - employee.lastPayDay) / payStep;
         employee.id.transfer(paySurplusWages);
     }
@@ -67,11 +83,8 @@ contract CompensationSys {
      * @param  employeeId [新员工地址]
      * @param  salary    [应付的月薪]
      */
-    function addEmployee(address employeeId, uint salary) {
-        require(msg.sender == owner);
-        // 添加前需要判断是否已经包含该员工
+    function addEmployee(address employeeId, uint salary) onlyOwner {
         var employeeTemp = employees[employeeId];
-        assert(employeeTemp.id == 0x0);
         // 添加员工
         Employee memory employee = Employee(employeeId, salary * 1 ether, now);
         employees[employeeId] = employee;
@@ -83,8 +96,7 @@ contract CompensationSys {
      * @author 花夏 liubiao@itoxs.com
      * @param  employeeId [需要删除员工的地址]
      */
-    function removerEmployee(address employeeId) {
-        require(msg.sender == owner);
+    function removerEmployee(address employeeId) onlyOwner {
         // 查找存在的需要移除的员工
         var employee = employees[employeeId];
         // 我已经在支付函数里做了判断拉~~
@@ -101,9 +113,7 @@ contract CompensationSys {
      * ** 填写地址处一定要使用英文状态下的双引号 "" ***
      * 例如 "0xca35b7d915458ef540ade6068dfe2f44e8fa733c"
      */
-    function updateEmployeeMsg(address ads, uint sly) {
-        // 检查是否合约所有者，不是的话是不允许改变的哦，要不然嘻嘻嘻~~~
-        require(msg.sender == owner);
+    function updateEmployeeMsg(address ads, uint sly) onlyOwner employeeExist(ads) {
         // 查找存在的需要移除的员工
         var employee = employees[ads];
         // 我已经在支付函数里做了判断拉~~
@@ -147,9 +157,8 @@ contract CompensationSys {
      * [getMyWage 员工自己领取自己的工资]
      * @author 花夏 liubiao@itoxs.com
      */
-    function getMyWage() {
+    function getMyWage() employeeExist(msg.sender) {
         var employee = employees[msg.sender];
-        assert(employee.id != 0x0);
         uint curPayDay = employee.lastPayDay + payStep;
         assert(curPayDay <= now && hasEnoughPay());
         // 为啥这几个if判断个分开写？不使用 || ？我分别弹出消息提醒用户啊！
