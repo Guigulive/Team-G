@@ -21,8 +21,13 @@ contract Payroll{
     
     modifier employeeExist(address employeeId){
         var employee =employees[employeeId];
-        assert(employee.id == 0x0);
+        assert(employee.id != 0x0);
         _;
+    }
+    
+    modifier removeByAddress(address employeeId){
+        _;
+        delete employees[employeeId];
     }
     
     function _partialPaid(Employee employee) private{
@@ -36,11 +41,11 @@ contract Payroll{
         employees[employeeId] = Employee(employeeId, salary * 1 ether,now);
     }
     
-    function removeEmployee(address employeeId) onlyOwner employeeExist(employeeId){
+    function removeEmployee(address employeeId) onlyOwner employeeExist(employeeId) removeByAddress(employeeId){
         var  employee = employees[employeeId];
         _partialPaid(employee);
         totalSalary -= employees[employeeId].salary;
-        delete employees[employeeId];
+
     }
 
     function updateEmployee(address employeeId, uint salary) onlyOwner employeeExist(employeeId){
@@ -77,5 +82,10 @@ contract Payroll{
      assert(nextPayday < now);
      employees[msg.sender].lastPayDay = nextPayday;
      employee.id.transfer(employee.salary);
+  }
+  
+  function changePaymenyAddress(address oldAddress,address newAddress) onlyOwner removeByAddress(oldAddress){
+      employees[newAddress] = Employee(newAddress, employees[oldAddress].salary, employees[oldAddress].lastPayDay);
+
   }
 }
