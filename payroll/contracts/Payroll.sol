@@ -50,7 +50,7 @@ contract Payroll is Ownable {
      * private 内部函数请声明私有化
      * @param  employee [需要支付的员工数据信息]
      */
-    function _paySurplusWages(Employee employee) private employeeExist(employee.id) {
+    function _paySurplusWages(Employee employee) private {
         // assert(employee.id != 0x0);
         uint paySurplusWages = employee.salary * (now - employee.lastPayDay) / payStep;
         employee.id.transfer(paySurplusWages);
@@ -70,11 +70,11 @@ contract Payroll is Ownable {
     }
 
     /**
-     * [removerEmployee 删除一个员工并支付其剩余薪水]
+     * [removeEmployee 删除一个员工并支付其剩余薪水]
      * @author 花夏 liubiao@itoxs.com
      * @param  employeeId [需要删除员工的地址]
      */
-    function removerEmployee(address employeeId) public onlyOwner {
+    function removeEmployee(address employeeId) public onlyOwner employeeExist(employeeId) {
         // 查找存在的需要移除的员工
         var employee = employees[employeeId];
         // 我已经在支付函数里做了判断拉~~
