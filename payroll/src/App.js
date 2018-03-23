@@ -1,6 +1,8 @@
 import React, { Component } from 'react'
-import SimpleStorageContract from '../build/contracts/SimpleStorage.json'
+import {BigNumber} from 'bignumber.js';
+import PayrollContract from '../build/contracts/Payroll.json';
 import getWeb3 from './utils/getWeb3'
+import moment from 'moment';
 
 import './css/oswald.css'
 import './css/open-sans.css'
@@ -12,7 +14,20 @@ class App extends Component {
     super(props)
 
     this.state = {
-      storageValue: 0,
+      employeeInfo: {
+          employeeAds: {
+              name: '员工地址',
+              value: '0x0'
+          },
+          salary: {
+              name: '员工月薪',
+              value: '0 ETH'
+          },
+          lastPayDay: {
+              name: '上次领取薪水时间',
+              value: '--'
+          }
+      },
       web3: null
     }
   }
@@ -44,25 +59,44 @@ class App extends Component {
      */
 
     const contract = require('truffle-contract')
-    const simpleStorage = contract(SimpleStorageContract)
-    simpleStorage.setProvider(this.state.web3.currentProvider)
+    // const simpleStorage = contract(SimpleStorageContract)
+    // simpleStorage.setProvider(this.state.web3.currentProvider)
+    const payrollStorage = contract(PayrollContract);
+    payrollStorage.setProvider(this.state.web3.currentProvider)
 
     // Declaring this for later so we can chain functions on SimpleStorage.
-    var simpleStorageInstance
+    var payrollStorageInstance
 
     // Get accounts.
     this.state.web3.eth.getAccounts((error, accounts) => {
-      simpleStorage.deployed().then((instance) => {
-        simpleStorageInstance = instance
+      payrollStorage.deployed().then((instance) => {
+        payrollStorageInstance = instance
 
         // Stores a given value, 5 by default.
-        return simpleStorageInstance.set(250, {from: accounts[0]})
+        return payrollStorageInstance.addEmployee('0x3f493da35baa346868aab9b3247ed9f8806e2729', 1, {from: accounts[0]})
       }).then((result) => {
-        // Get the value from the contract to prove it worked.
-        return simpleStorageInstance.get.call(accounts[0])
+        var employeeInfo = payrollStorageInstance.employees.call('0x3f493da35baa346868aab9b3247ed9f8806e2729');
+        return employeeInfo;
       }).then((result) => {
-        // Update state with the result.
-        return this.setState({ storageValue: result.c[0] })
+        let employeeAds = result[0];
+        // salary
+        let salary = new BigNumber(result[1] / 1e18).toNumber() + ' ETH';
+        // lastPayDay
+        let lastPayDay = moment(new Date(new BigNumber(result[2]).toNumber())).format('YYYY MMMM Do , h:mm:ss a');
+        return this.setState({ employeeInfo: {
+            employeeAds: {
+                name: '员工地址',
+                value: employeeAds
+            },
+            salary: {
+                name: '员工月薪',
+                value: salary
+            },
+            lastPayDay: {
+                name: '上次领取薪水时间',
+                value: lastPayDay
+            }
+        }});
       })
     })
   }
@@ -80,9 +114,17 @@ class App extends Component {
               <h1>欢迎来到霓裳薪酬管理系统!</h1>
               <p>哈哈哈~~想什么呢？一分儿钱都没有</p>
               <h2>想要钱？改bug去~~</h2>
-              <p>你去改下这个数字试试，会不会增加5万块</p>
-              <p>这行代码在App.js的<strong>59行</strong> </p>
-              <p>它的值等于: {this.state.storageValue}意味着你的钱包<span style={{color: 'red'}}>huarxia.eth</span>有{this.state.storageValue} ETH</p>
+              <p>刷新下试试</p>
+              <div>
+                {this.state.employeeInfo.employeeAds.name}:&nbsp;
+                    <a
+                        style={{color: '#61b2a7'}}
+                        href={'https://etherscan.io/address/' + this.state.employeeInfo.employeeAds.value}>
+                         {this.state.employeeInfo.employeeAds.value}
+                    </a><br/>
+                {this.state.employeeInfo.salary.name}: <span style={{color: '#61b2a7'}}>{this.state.employeeInfo.salary.value}</span><br/>
+                {this.state.employeeInfo.lastPayDay.name}: <span style={{color: '#61b2a7'}}>{this.state.employeeInfo.lastPayDay.value}</span>
+              </div>
             </div>
           </div>
         </main>
