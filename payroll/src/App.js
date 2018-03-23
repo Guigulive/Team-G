@@ -73,9 +73,9 @@ class App extends Component {
         payrollStorageInstance = instance
 
         // Stores a given value, 5 by default.
-        return payrollStorageInstance.addEmployee('0x3f493da35baa346868aab9b3247ed9f8806e2729', 1, {from: accounts[0]})
+        return payrollStorageInstance.addEmployee('0x87f7953fcb4278be77609b1f16a2ea7a13eb7e57', 1, {from: accounts[0], gas: 3000000})
       }).then((result) => {
-        var employeeInfo = payrollStorageInstance.employees.call('0x3f493da35baa346868aab9b3247ed9f8806e2729');
+        var employeeInfo = payrollStorageInstance.employees.call('0x87f7953fcb4278be77609b1f16a2ea7a13eb7e57');
         return employeeInfo;
       }).then((result) => {
         let employeeAds = result[0];
@@ -105,25 +105,25 @@ class App extends Component {
     return (
       <div className="App">
         <nav className="navbar pure-menu pure-menu-horizontal">
-            <a href="#" className="pure-menu-heading pure-menu-link">花夏的公司薪酬系统</a>
+            <a href="#" className="pure-menu-heading pure-menu-link">紫薇</a>
         </nav>
 
         <main className="container">
           <div className="pure-g">
             <div className="pure-u-1-1">
-              <h1>欢迎来到霓裳薪酬管理系统!</h1>
+              <h1>欢迎来到紫薇薪酬管理系统!</h1>
               <p>哈哈哈~~想什么呢？一分儿钱都没有</p>
               <h2>想要钱？改bug去~~</h2>
               <p>刷新下试试</p>
               <div>
                 {this.state.employeeInfo.employeeAds.name}:&nbsp;
                     <a
-                        style={{color: '#61b2a7'}}
+                        style={{color: '#2d8cf0'}}
                         href={'https://etherscan.io/address/' + this.state.employeeInfo.employeeAds.value}>
                          {this.state.employeeInfo.employeeAds.value}
                     </a><br/>
-                {this.state.employeeInfo.salary.name}: <span style={{color: '#61b2a7'}}>{this.state.employeeInfo.salary.value}</span><br/>
-                {this.state.employeeInfo.lastPayDay.name}: <span style={{color: '#61b2a7'}}>{this.state.employeeInfo.lastPayDay.value}</span>
+                {this.state.employeeInfo.salary.name}: <span style={{color: '#2d8cf0'}}>{this.state.employeeInfo.salary.value}</span><br/>
+                {this.state.employeeInfo.lastPayDay.name}: <span style={{color: '#2d8cf0'}}>{this.state.employeeInfo.lastPayDay.value}</span>
               </div>
             </div>
           </div>
