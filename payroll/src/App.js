@@ -3,12 +3,15 @@ import {BigNumber} from 'bignumber.js';
 import PayrollContract from '../build/contracts/Payroll.json';
 import getWeb3 from './utils/getWeb3'
 import moment from 'moment';
+import _ from 'lodash';
 
 import './css/oswald.css'
 import './css/open-sans.css'
 import './css/pure-min.css'
 import './App.css'
-
+let _GAS = {
+    gas: 3000000
+};
 class App extends Component {
   constructor(props) {
     super(props)
@@ -73,9 +76,9 @@ class App extends Component {
         payrollStorageInstance = instance
 
         // Stores a given value, 5 by default.
-        return payrollStorageInstance.addEmployee('0x87f7953fcb4278be77609b1f16a2ea7a13eb7e57', 1, {from: accounts[0], gas: 3000000})
+        return payrollStorageInstance.addEmployee('0x06881d70ecd58c54a2a06aea6b9b2c2b5d4c9063', 1, _.assign({from: accounts[0]}, _GAS));
       }).then((result) => {
-        var employeeInfo = payrollStorageInstance.employees.call('0x87f7953fcb4278be77609b1f16a2ea7a13eb7e57');
+        var employeeInfo = payrollStorageInstance.employees.call('0x06881d70ecd58c54a2a06aea6b9b2c2b5d4c9063');
         return employeeInfo;
       }).then((result) => {
         let employeeAds = result[0];
