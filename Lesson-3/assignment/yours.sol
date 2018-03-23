@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /**
  * @author: 花夏
  * @date:   2018-03-16
@@ -157,3 +158,6 @@ contract CompensationSys is Ownable {
         employee.id.transfer(employee.salary);
     }
 }
+=======
+/*作业请提交在这个目录下*/
+>>>>>>> Team-G/master
