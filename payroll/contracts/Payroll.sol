@@ -15,7 +15,6 @@ contract Payroll is Ownable {
     // uint constant payStep = 30 days;
     // 方便调试改成 10s
     uint constant payStep = 10 seconds;
-    address owner;
     uint private totalSalary = 0;
     // 定义个strut类型的employee数组
     struct Employee {
