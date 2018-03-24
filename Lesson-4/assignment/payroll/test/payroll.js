@@ -21,7 +21,6 @@ contract('Payroll', function(accounts) {
   it("...removeEmployee", function() {
     return Payroll.deployed().then(function(instance) {
       payrollInstance = instance;
-
       return payrollInstance.addEmployee(accounts[2], 1, {from: accounts[0]});
         })
     .then(function(){
@@ -44,11 +43,11 @@ contract('Payroll', function(accounts) {
   it("...getPaid", function() {
     return Payroll.deployed().then(function(instance) {
       payrollInstance = instance;
-
+      
       return payrollInstance.addEmployee(accounts[3], 1, {from: accounts[0]});
         })
     .then(function(){
-        return payrollInstance.addFund({value: 100}); 
+        return payrollInstance.addFund({value: 80000000000000000000}); 
     })
     .then(function() {
       return payrollInstance.getPaid({from: accounts[3]});

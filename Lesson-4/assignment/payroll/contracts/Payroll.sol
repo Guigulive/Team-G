@@ -8,7 +8,7 @@ contract Payroll {
         uint lastPayday;
     }
     
-    uint constant payDuration = 10 seconds;
+    uint constant payDuration = 1 seconds;
     uint totalSalary = 0;
     address boss;
     mapping (address=>Employee) public employees;
@@ -90,11 +90,11 @@ contract Payroll {
         return calculateRunway() > 0 ;
     }
     
-    function getPaid() onlyEmployee(msg.sender) {
+    function getPaid() checkExist(msg.sender) {
         var employee = employees[msg.sender];
         
         uint nextPayDay = employee.lastPayday + payDuration;
-        assert(nextPayDay < now);
+        assert(nextPayDay <= now);
         
         employees[msg.sender].lastPayday = nextPayDay;
         employee.id.transfer(employee.salary);
