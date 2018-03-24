@@ -1,14 +1,21 @@
+var requireDir = require('require-dir');
 const ora = require('ora');
 const _ = require('lodash');
 const chalk = require('chalk');
 const _GAS = {
     gas: 3000000
 };
-// todo(思考) 后期可参照gulp直接获取文件夹下所有文件，不需要单独require
-var testArr = [
-    require('./.payroll-test/testAddEmployee.js'),
-    require('./.payroll-test/testRemoveEmployee.js')
-];
+var testArr = [];
+var dir = requireDir('./.payroll-test/', {
+    recurse: true,
+    filter: function(fullPath) {
+        // 匹配测试示例文件必须以  .test.js结尾
+        return process.env.NODE_ENV !== 'production' && !!fullPath.match(/(\.test\.js)$/);
+    }
+});
+for (name in dir) {
+    testArr.push(dir[name]);
+}
 var PayrollStorage = artifacts.require("./Payroll.sol");
 contract('PayrollStorage', function (accounts) {
     next();

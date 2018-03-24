@@ -55,7 +55,8 @@
     "moment": "^2.21.0",
     "ora": "^2.0.0",
     "react": "^15.4.2",
-    "react-dom": "^15.4.2"
+    "react-dom": "^15.4.2",
+    "require-dir": "^1.0.0"
   },
   "scripts": {
     "start": "node scripts/start.js",
