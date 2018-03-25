@@ -15,6 +15,7 @@ var dir = requireDir('./.payroll-test/', {
     recurse: true,
     filter: function(fullPath) {
         // 匹配测试示例文件必须以  .test.js结尾
+        // 忽略文件不返回
         const fileName = fullPath.match(fileNameReg)[1];
         return process.env.NODE_ENV !== 'production'
             && !!fileName.match(/(\.test\.js)$/)
