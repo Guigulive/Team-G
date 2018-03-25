@@ -25,6 +25,7 @@ var dir = requireDir('./.payroll-test/', {
 for (name in dir) {
     testArr.push(dir[name]);
 }
+// todo 生成的测试文件按时间戳保存到result文件夹下
 var PayrollStorage = artifacts.require("./Payroll.sol");
 contract('PayrollStorage', function (accounts) {
     next();
