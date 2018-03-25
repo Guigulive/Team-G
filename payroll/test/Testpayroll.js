@@ -28,10 +28,11 @@ for (name in dir) {
 // todo 生成的测试文件按时间戳保存到result文件夹下
 var PayrollStorage = artifacts.require("./Payroll.sol");
 contract('PayrollStorage', function (accounts) {
+    const spinner = ora('开始测试Payroll!').start();
     next();
     function next() {
         if (testArr.length > 0) {
-            testArr.shift()(PayrollStorage, accounts, next);
+            testArr.shift()(PayrollStorage, accounts, spinner, next);
         }
     };
 });
