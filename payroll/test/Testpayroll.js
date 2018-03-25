@@ -1,4 +1,6 @@
 var requireDir = require('require-dir');
+var YAML = require('yamljs');
+const path = require('path');
 const ora = require('ora');
 const _ = require('lodash');
 const chalk = require('chalk');
@@ -6,11 +8,17 @@ const _GAS = {
     gas: 3000000
 };
 var testArr = [];
+var testignore = YAML.load(path.join(__dirname, './.testignore.yml'));
+const ignore = testignore.ignore;
+const fileNameReg = /([^/]+)$/;
 var dir = requireDir('./.payroll-test/', {
     recurse: true,
     filter: function(fullPath) {
         // 匹配测试示例文件必须以  .test.js结尾
-        return process.env.NODE_ENV !== 'production' && !!fullPath.match(/(\.test\.js)$/);
+        const fileName = fullPath.match(fileNameReg)[1];
+        return process.env.NODE_ENV !== 'production'
+            && !!fileName.match(/(\.test\.js)$/)
+            && ignore.indexOf(fileName) === -1;
     }
 });
 for (name in dir) {

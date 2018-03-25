@@ -12,7 +12,7 @@ module.exports = function(PayrollStorage, accounts, next) {
     it('', function () {
         return PayrollStorage.deployed().then(function (instance) {
             PayrollStorageInstance = instance;
-            return PayrollStorageInstance.getMyWage(_.assign({
+            return PayrollStorageInstance.addEmployee(address, 1, _.assign({
                 from: accounts[0]
             }, _GAS));
         }).then(function () {
