@@ -6,7 +6,7 @@ const _GAS = {
 };
 module.exports = function(PayrollStorage, accounts, spinner, next) {
     spinner.color = 'yellow';
-    // spinner.text = '测试中...\n';
+    spinner.text = '测试中...\n';
     it('owner 执行addEmployee测试', function () {
         var address = accounts[0];
         return PayrollStorage.deployed().then(function(instance) {
