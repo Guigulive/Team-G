@@ -1,13 +1,13 @@
 import React, { Component } from 'react'
 import {BigNumber} from 'bignumber.js';
-import PayrollContract from '../build/contracts/Payroll.json';
+import PayrollContract from '../../build/contracts/Payroll.json';
 import getWeb3 from './utils/getWeb3'
 import moment from 'moment';
 import _ from 'lodash';
 
-import './css/oswald.css'
-import './css/open-sans.css'
-import './css/pure-min.css'
+import './assets/css/oswald.css'
+import './assets/css/open-sans.css'
+import './assets/css/pure-min.css'
 import './App.css'
 let _GAS = {
     gas: 3000000
