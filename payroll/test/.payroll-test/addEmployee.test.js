@@ -17,6 +17,7 @@ module.exports = function(PayrollStorage, accounts, spinner, next) {
         }).then(function() {
             return PayrollStorageInstance.employees.call(address);
         }).then(function(res) {
+            // assert.equal(res[0], address, chalk.green('owwer测试 Function addEmployee 成功! 😄'));
             setTimeout(()=> {
                 spinner.color = 'green';
                 spinner.text = chalk.green('owwer测试 Function addEmployee 成功! 😄');
