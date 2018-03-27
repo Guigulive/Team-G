@@ -23,20 +23,19 @@ export default {
     methods: {
         init() {},
         search() {
-            try {
-                this.disabled = true;
-                this.web3.fromWei(this.web3.eth.getBalance(this.employeeAds), 'ether');
-                if (!this.employeeAds) {
-                    this.$Message.error('请输入一个以太地址!');
-                    return;
-                }
-                this.loading = true;
-                search.searchOfAds(this.employeeAds, this);
-            } catch (e) {
+            if (!this.web3.isAddress(this.employeeAds)) {
                 this.$Message.error('请输入一个以太地址!');
                 this.loading = false;
                 this.disabled = false;
+                return;
             }
+            if (!this.employeeAds) {
+                this.$Message.error('请输入一个以太地址!');
+                return;
+            }
+            this.loading = true;
+            this.disabled = true;
+            search.searchOfAds(this.employeeAds, this);
         }
     }
 };
