@@ -11,6 +11,7 @@ export default {
             return employeeInfo;
         }).then((result) => {
             _this.loading = false;
+            _this.disabled = false;
             let employeeAds = result[0];
             // 判段地址是否是 0x0000000000000000000000000000000000000000
             if (parseInt(employeeAds.slice(2), 10) === 0) {

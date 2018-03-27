@@ -4,12 +4,15 @@
             v-model="employeeAds"
             size="large"
             :clearable="true"
-            placeholder="请输入您的以太地址查询">
+            placeholder="请输入您的以太地址查询"
+            @on-enter="search">
         </Input>
         <Button
             class="search-btn"
             icon="ios-search"
             type="primary"
+            :loading="loading"
+            :disabled="disabled"
             @click="search">查询</Button>
     </div>
     <Card

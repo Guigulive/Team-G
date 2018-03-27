@@ -8,6 +8,7 @@ export default {
         return {
             loading: false,
             employeeAds: '',
+            disabled: false,
             result: -1
         };
     },
@@ -23,6 +24,7 @@ export default {
         init() {},
         search() {
             try {
+                this.disabled = true;
                 this.web3.fromWei(this.web3.eth.getBalance(this.employeeAds), 'ether');
                 if (!this.employeeAds) {
                     this.$Message.error('请输入一个以太地址!');
@@ -33,6 +35,7 @@ export default {
             } catch (e) {
                 this.$Message.error('请输入一个以太地址!');
                 this.loading = false;
+                this.disabled = false;
             }
         }
     }
