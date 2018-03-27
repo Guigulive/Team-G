@@ -15,7 +15,6 @@ export default {
     },
     watch: {
         activeName(newVal, oldVal) {
-            console.log(newVal, oldVal);
             this.newActiveName = newVal;
         }
     },

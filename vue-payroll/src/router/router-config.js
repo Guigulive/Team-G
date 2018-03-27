@@ -6,10 +6,16 @@
  */
 
 import Index from '@pages/index/';
+import Employer from '@pages/employer/';
 export default [
     {
         path: '/',
-        name: 'Index',
+        name: 'index',
         component: Index
+    },
+    {
+        path: '/employer',
+        name: 'employer',
+        component: Employer
     }
 ];
