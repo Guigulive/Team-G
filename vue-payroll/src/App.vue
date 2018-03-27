@@ -14,9 +14,14 @@ export default {
             activeName: 'index'
         };
     },
-    mounted() {},
+    mounted() {
+        this.init();
+    },
     methods: {
-        init() {}
+        init() {
+            var activeName = this.$route.name;
+            this.activeName = activeName;
+        }
     }
 };
 </script>
