@@ -1,4 +1,4 @@
-// import {BigNumber} from 'bignumber.js';
+import {BigNumber} from 'bignumber.js';
 export default {
     getInfo(_this) {
         var me = this;
@@ -7,6 +7,7 @@ export default {
         });
     },
     init(_this) {
+        this.self = _this;
         let Payroll = _this.Payroll;
         let web3 = _this.web3;
         let PayrollInstance;
@@ -21,7 +22,7 @@ export default {
             PayrollInstance.addFund.call().then((res) => {
                 _this.info.push({
                     name: '合约剩余总额 / ETH',
-                    value: web3.toWei(res.c[0]),
+                    value: web3.fromWei(new BigNumber(res).toNumber()),
                     isAddFund: true
                 });
             });
@@ -30,8 +31,26 @@ export default {
             PayrollInstance.getPayTimes.call().then((res) => {
                 _this.info.push({
                     name: '剩余最多支付次数 / 次',
-                    value: res.c[0]
+                    value: new BigNumber(res).toNumber()
                 });
+            });
+            return this;
+        });
+    },
+    addFund(value) {
+        var me = this;
+        let Payroll = me.self.Payroll;
+        let web3 = me.self.web3;
+        let PayrollInstance;
+        Payroll.deployed().then((instance) => {
+            PayrollInstance = instance;
+            PayrollInstance.addFund({
+                from: me.self.account,
+                value: web3.toWei(value)
+            }).then(() => {
+                setTimeout(() => {
+                    self.location.reload();
+                }, 1000);
             });
             return this;
         });

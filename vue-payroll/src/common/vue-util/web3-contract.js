@@ -17,6 +17,9 @@ export default {
             Vue.prototype.web3 = results.web3;
             Vue.prototype.Payroll = Payroll;
             Vue.prototype.GAS = GAS;
+            results.web3.eth.getAccounts((error, accounts) => {
+                Vue.prototype.account = accounts[0];
+            });
             Payroll.setProvider(results.web3.currentProvider);
         }).catch((res) => {
             console.log('Error finding web3.');
