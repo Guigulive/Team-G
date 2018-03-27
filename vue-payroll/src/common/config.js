@@ -7,7 +7,9 @@
  */
 
 let config = {
-    ajaxBaseUrl: '/api'
+    ajaxBaseUrl: '/api',
+    // 默认 GAS
+    GAS: 3000000
 };
 
 export default config;

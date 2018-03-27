@@ -26,6 +26,7 @@ module.exports = {
       '@': resolve('src'),
       'src': path.resolve(__dirname, '../src'),
       'assets': path.resolve(__dirname, '../src/app/assets'),
+      '@controller': path.resolve(__dirname, '../src/app/controller'),
       '@pages': path.resolve(__dirname, '../src/app/pages'),
       '@components': path.resolve(__dirname, '../src/app/components'),
       '@common': path.resolve(__dirname, '../src/app/common'),
