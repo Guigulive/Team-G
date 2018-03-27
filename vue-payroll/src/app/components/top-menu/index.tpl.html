@@ -1,0 +1,33 @@
+<div id="top">
+    <div class="top-menu">
+        <a href="/" class="logo">
+            <img
+                src="../../../../static/logo.png"
+                alt="晓科技"
+                height="45">
+        </a>
+        <span
+            checkable
+            color="green"
+            class="top-menu-tag masked">
+                晓科技薪酬管理系统
+        </span>
+        <ButtonGroup
+            class="top-btn-group"
+            size="small">
+            <Button type="ghost" name="telegram" icon="paper-airplane" @click="gotoCommunity($event)"></Button>
+            <Button type="ghost" name="twitter" icon="social-twitter" @click="gotoCommunity($event)"></Button>
+            <Button type="ghost" name="github" icon="social-github" @click="gotoCommunity($event)"></Button>
+        </ButtonGroup>
+        <Menu
+            mode="horizontal"
+            :theme="theme"
+            :activeName="newActiveName"
+            @on-select="route"
+            class="menu-list">
+            <MenuItem name="index">首页</MenuItem>
+            <MenuItem name="employer">我是雇主</MenuItem>
+            <MenuItem name="employee">我是员工</MenuItem>
+        </Menu>
+    </div>
+</div>
