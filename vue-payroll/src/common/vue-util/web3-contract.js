@@ -12,8 +12,6 @@ import PayrollContract from '../../../build/contracts/Payroll.json';
 export default {
     install(Vue, options) {
         getWeb3.then(results => {
-            // me.web3 = results.web3;
-            // this.init();
             const contract = require('truffle-contract');
             const Payroll = contract(PayrollContract);
             Vue.prototype.web3 = results.web3;

@@ -11,4 +11,12 @@
             员工信息
         </MenuItem>
     </Menu>
+    <div class="right-info">
+        <Card
+            class="card"
+            v-for="item in info">
+            <p slot="title">{{item.name}}</p>
+            <p>{{item.value}}</p>
+        </Card>
+    </div>
 </div>

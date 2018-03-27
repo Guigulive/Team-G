@@ -1,14 +1,13 @@
 <template src="./index.tpl.html"></template>
 <script>
+import contractInfo from '@controller/contract-info';
 export default {
     name: 'employer',
     components: {},
     data() {
         return {
             loading: false,
-            employeeAds: '',
-            disabled: false,
-            result: -1
+            info: []
         };
     },
     watch: {},
@@ -16,7 +15,9 @@ export default {
         this.init();
     },
     methods: {
-        init() {}
+        init() {
+            contractInfo.getInfo(this);
+        }
     }
 };
 </script>
