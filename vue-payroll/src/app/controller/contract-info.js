@@ -21,7 +21,8 @@ export default {
             PayrollInstance.addFund.call().then((res) => {
                 _this.info.push({
                     name: '合约剩余总额 / ETH',
-                    value: web3.toWei(res.c[0])
+                    value: web3.toWei(res.c[0]),
+                    isAddFund: true
                 });
             });
             return this;

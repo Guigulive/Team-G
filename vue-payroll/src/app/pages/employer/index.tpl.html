@@ -16,7 +16,14 @@
             class="card"
             v-for="item in info">
             <p slot="title">{{item.name}}</p>
-            <p>{{item.value}}</p>
+            <p>
+                {{item.value}}
+                <Button
+                    type="primary"
+                    size="small"
+                    class="fr"
+                    v-if="item.isAddFund">增加余额</Button>
+            </p>
         </Card>
     </div>
 </div>
