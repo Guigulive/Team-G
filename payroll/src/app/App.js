@@ -9,6 +9,7 @@ import './assets/css/oswald.css'
 import './assets/css/open-sans.css'
 import './assets/css/pure-min.css'
 import './App.css'
+import 'antd/dist/antd.css';
 let _GAS = {
     gas: 3000000
 };

@@ -3,7 +3,7 @@
 ### Started
 
 + `npm install`
-+ `truffle comple`
++ `truffle compile`
 + `truffle migration`
 
 #### 前端开发
