@@ -129,7 +129,8 @@ contract Payroll is Ownable {
      * @return [返回合约地址还能支付薪水的次数]
      */
     function getPayTimes() view public returns(uint) {
-        return this.balance / totalSalary;
+        uint times = totalSalary == 0 ? 0 : this.balance / totalSalary;
+        return times;
     }
 
     /**

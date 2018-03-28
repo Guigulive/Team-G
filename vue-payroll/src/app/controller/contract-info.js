@@ -5,12 +5,15 @@ export default {
         window.addEventListener('load', function() {
             me.init(_this);
         });
+        // todo 路由切换做单独判断
+        // me.init(_this);
     },
     init(_this) {
         this.self = _this;
         let Payroll = _this.Payroll;
         let web3 = _this.web3;
         let PayrollInstance;
+        console.log(_this.account);
         Payroll.deployed().then((instance) => {
             PayrollInstance = instance;
             _this.info.push({
@@ -19,7 +22,9 @@ export default {
             });
             return this;
         }).then((result) => {
-            PayrollInstance.addFund.call().then((res) => {
+            PayrollInstance.addFund.call({
+                from: _this.account
+            }).then((res) => {
                 _this.info.push({
                     name: '合约剩余总额 / ETH',
                     value: web3.fromWei(new BigNumber(res).toNumber()),

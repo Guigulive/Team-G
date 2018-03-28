@@ -11,10 +11,9 @@ import web3ContractUtil from '@/common/vue-util/web3-contract';
 
 import TopMenu from '@components/top-menu/';
 import XCFooter from '@components/footer/';
-
+Vue.use(web3ContractUtil);
 moment.locale('zh-cn');
 Vue.config.productionTip = false;
-Vue.use(web3ContractUtil);
 Vue.use(iView);
 Vue.component('xc-footer', XCFooter);
 Vue.component('xc-menu', TopMenu);
