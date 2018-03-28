@@ -12,11 +12,13 @@
             员工信息
         </MenuItem>
     </Menu>
-    <div class="right-info">
+    <div
+        class="right-info">
         <Card
             class="card"
             v-for="item in info"
-            :key="item.id">
+            :key="item.id"
+            v-if="leftMenuAcName === 'contractInfo'">
             <p slot="title">{{item.name}}</p>
             <p>
                 {{item.value}}
@@ -28,5 +30,33 @@
                     @click="addFund">增加余额</Button>
             </p>
         </Card>
+        <div v-if="leftMenuAcName === 'employeeInfo'">
+            <div class="add-employee-info">
+                <Input
+                    class="add-address"
+                    size="large"
+                    :clearable="true"
+                    @on-enter="addEmpolyee"
+                    v-model="addAddress"
+                    placeholder="请输入要添加的员工地址">
+                </Input>
+                <Input
+                    class="add-salary"
+                    size="large"
+                    :clearable="true"
+                    @on-enter="addEmpolyee"
+                    v-model="addSalary"
+                    placeholder="请输入要添加的员工月薪">
+                    <Button
+                        slot="append"
+                        @click="addEmpolyee">添加员工</Button>
+                </Input>
+            </div>
+            <Table
+                height="300"
+                :columns="columns1"
+                :data="employeeData">
+                </Table>
+        </div>
     </div>
 </div>
