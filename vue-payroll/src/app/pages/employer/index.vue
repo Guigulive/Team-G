@@ -11,6 +11,7 @@ export default {
             leftMenuAcName: 'contractInfo',
             info: [],
             addAddress: '',
+            tempAddress: '',
             addSalary: '',
             balance: 0,
             runTimes: 0,
@@ -21,64 +22,64 @@ export default {
                     key: 'address'
                 },
                 {
-                    title: '月薪',
-                    key: 'salary'
+                    title: '月薪 ETH',
+                    key: 'salary',
+                    width: 100
                 },
                 {
                     title: '上次领取时间',
                     key: 'lastPayDay'
+                },
+                {
+                    title: '操作',
+                    key: 'action',
+                    width: 220,
+                    render: (h, params) => {
+                        return h('div', [
+                            h('Button', {
+                                props: {
+                                    type: 'error',
+                                    size: 'small'
+                                },
+                                style: {
+                                    marginRight: '5px'
+                                },
+                                on: {
+                                    click: () => {
+                                        this.show(params.index);
+                                    }
+                                }
+                            }, '删除'),
+                            h('Button', {
+                                props: {
+                                    type: 'info',
+                                    size: 'small'
+                                },
+                                style: {
+                                    marginRight: '5px'
+                                },
+                                on: {
+                                    click: () => {
+                                        this.updateAddress(params);
+                                    }
+                                }
+                            }, '更新地址'),
+                            h('Button', {
+                                props: {
+                                    type: 'success',
+                                    size: 'small'
+                                },
+                                on: {
+                                    click: () => {
+                                        this.show(params.index);
+                                    }
+                                }
+                            }, '更新月薪')
+                        ]);
+                    }
                 }
             ],
-            employeeData: [
-                {
-                    name: 'John Brown',
-                    salary: 18,
-                    address: 'New York No. 1 Lake Park',
-                    lastPayDay: '2016-10-03'
-                },
-                {
-                    name: 'Jim Green',
-                    salary: 24,
-                    address: 'London No. 1 Lake Park',
-                    lastPayDay: '2016-10-01'
-                },
-                {
-                    name: 'Joe Black',
-                    salary: 30,
-                    address: 'Sydney No. 1 Lake Park',
-                    lastPayDay: '2016-10-02'
-                },
-                {
-                    name: 'Jon Snow',
-                    salary: 26,
-                    address: 'Ottawa No. 2 Lake Park',
-                    lastPayDay: '2016-10-04'
-                },
-                {
-                    name: 'John Brown',
-                    salary: 18,
-                    address: 'New York No. 1 Lake Park',
-                    lastPayDay: '2016-10-03'
-                },
-                {
-                    name: 'Jim Green',
-                    salary: 24,
-                    address: 'London No. 1 Lake Park',
-                    lastPayDay: '2016-10-01'
-                },
-                {
-                    name: 'Joe Black',
-                    salary: 30,
-                    address: 'Sydney No. 1 Lake Park',
-                    lastPayDay: '2016-10-02'
-                },
-                {
-                    name: 'Jon Snow',
-                    salary: 26,
-                    address: 'Ottawa No. 2 Lake Park',
-                    lastPayDay: '2016-10-04'
-                }
-            ]
+            employeeData: []
         };
     },
     watch: {
@@ -146,6 +147,34 @@ export default {
         },
         getEmployeeList() {
             contractInfo.getEmployeeList(this);
+        },
+        updateAddress(params) {
+            console.log(params);
+            var me = this;
+            this.$Modal.confirm({
+                title: '请使用新地址替换当前地址',
+                render: (h) => {
+                    return h('Input', {
+                        props: {
+                            value: params.row.address,
+                            autofocus: true,
+                            placeholder: '请输入需要替换的地址'
+                        },
+                        on: {
+                            input: (val) => {
+                                this.tempAddress = val;
+                            }
+                        }
+                    });
+                },
+                onOk: () => {
+                    contractInfo.changePaymentAddress(params.row.address, this.tempAddress, params.index, me);
+                    me.tempAddress = '';
+                },
+                onCancel: () => {
+                    this.tempAddress = '';
+                }
+            });
         }
     }
 };

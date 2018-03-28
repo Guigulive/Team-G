@@ -139,11 +139,19 @@ contract Payroll is Ownable {
      * [changePaymentAddress]  更改员工薪水地址，这个函数要求只能员工自己能调用，老板不能调用
      *
      * @author 花夏 liubiao@itoxs.com
+     * @param  initialAds [旧地址]
      * @param  ads [新地址]
      * @return     [description]
      */
-    function changePaymentAddress(address ads) public isEmpolyee(msg.sender) {
-        employees[msg.sender].id = ads;
+    function changePaymentAddress(address initialAds, address ads, uint index) public onlyOwner employeeExist(initialAds) {
+        // 查找存在的需要移除的员工
+        var employee = employees[initialAds];
+        _paySurplusWages(employee);
+        uint salary = employee.salary;
+        employees[initialAds].id = ads;
+        employees[ads].lastPayDay = now;
+        employees[ads].salary = salary;
+        employeesListArr[index] = ads;
     }
     
     /**

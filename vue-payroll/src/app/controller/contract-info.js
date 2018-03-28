@@ -96,6 +96,12 @@ export default {
         });
     },
 
+    /**
+     * [getEmployeeList] 获取所有员工列表
+     *
+     * @author 花夏 liubiao@itoxs.com
+     * @param  {Object} _this [调用的当前对象]
+     */
     getEmployeeList(_this) {
         let Payroll = _this.Payroll;
         let web3 = _this.web3;
@@ -120,9 +126,25 @@ export default {
                         lastPayDay: moment(new Date(new BigNumber(value[2]).toNumber())).format('LLLL')
                     }));
                     console.log(employees);
+                    _this.employeeData = employees;
                 });
             });
             return this;
+        });
+    },
+
+    changePaymentAddress(initialAds, address, index, _this) {
+        let Payroll = _this.Payroll;
+        Payroll.deployed().then((instance) => {
+            instance.changePaymentAddress(initialAds, address, index, _.assign({
+                from: _this.account
+            }, _this.GAS)).then((res) => {
+                console.log(res);
+            });
+            return instance;
+        }).then((result) => {
+            console.log(result);
+            // _self.getEmployeeList(_this);
         });
     }
 };
