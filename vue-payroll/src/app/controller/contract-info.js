@@ -23,7 +23,7 @@ export default {
         let Payroll = _this.Payroll;
         let web3 = _this.web3;
         let PayrollInstance;
-        _this.info = [];
+        // _this.info = [];
         Payroll.deployed().then((instance) => {
             PayrollInstance = instance;
             _this.info.push({

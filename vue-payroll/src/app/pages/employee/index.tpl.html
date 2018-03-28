@@ -1,31 +1,33 @@
 <div id="employee">
+    <Row class="contract-info" :gutter="16" type="flex">
+        <Col span="8" v-for="item in info">
+            <Card
+                class="card">
+                <p slot="title">{{item.name}}</p>
+                <p>
+                    {{item.value}}
+                </p>
+            </Card>
+        </Col>
+    </Row>
     <Card class="my-address">
         <p slot="title">我的地址</p>
         <p>{{employee.address}}</p>
     </Card>
-    <Card
-        class="card"
-        v-for="item in info"
-        :key="item.id">
-        <p slot="title">{{item.name}}</p>
-        <p>
-            {{item.value}}
-        </p>
-    </Card>
-    <Row>
-        <Col span="8" :xs="{ span: 6, offset: 2 }">
+    <Row :gutter="16" type="flex">
+        <Col span="8">
             <Card>
                 <p slot="title">我的月薪</p>
                 <p style="color: #2d8cf0">{{employee.salary}} ETH</p>
             </Card>
         </Col>
-        <Col span="8" :xs="{ span: 6, offset: 2 }" :lg="{ span: 6, offset: 1 }">
+        <Col span="8">
             <Card>
                 <p slot="title">上次领取工资时间</p>
                 <p style="color: #2d8cf0">{{employee.lastPayDay}}</p>
             </Card>
         </Col>
-        <Col span="8" :xs="{ span: 6, offset: 2 }" :lg="{ span: 6, offset: 1 }">
+        <Col span="8">
             <Card>
                 <p slot="title">剩余金额</p>
                 <p style="color: #2d8cf0">{{employee.balance}} ETH</p>

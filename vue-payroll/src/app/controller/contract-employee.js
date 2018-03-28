@@ -12,7 +12,6 @@ export default {
         _this.employee.balance = web3.fromWei(new BigNumber(balance).toNumber());
         let Payroll = _this.Payroll;
         // let PayrollInstance;
-        _this.info = [];
         Payroll.deployed().then((instance) => {
             instance.checkEmployee.call(index).then((res) => {
                 let salary = web3.fromWei(new BigNumber(res[1]).toNumber());
