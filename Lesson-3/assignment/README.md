@@ -12,6 +12,7 @@
 - contract K1 is A, B
 - contract K2 is A, C
 - contract Z is K1, K2
+<<<<<<< HEAD
 
 
 ### 作业截图
@@ -39,3 +40,5 @@
 ![changePaymentAddress-1](images/changePaymentAddress-1.png)
 
 ![changePaymentAddress-2](images/changePaymentAddress-2.png)
+=======
+>>>>>>> Team-G/master
