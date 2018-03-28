@@ -16,6 +16,7 @@ contract Payroll is Ownable {
     // 方便调试改成 10s
     uint constant payStep = 10 seconds;
     uint private totalSalary = 0;
+    uint totalEmployee = 0;
     // 定义个strut类型的employee数组
     struct Employee {
         // 因为地址是唯一的，所以将地址设为Id
@@ -26,6 +27,7 @@ contract Payroll is Ownable {
     // Employee [] employees;
     // 使用map结构方便查询降低gas
     mapping (address => Employee) public employees;
+    address[] employeesListArr;
     /**
      * 定义一个modifier 判断是否包含这个员工
      */
@@ -66,6 +68,8 @@ contract Payroll is Ownable {
         Employee memory employee = Employee(employeeId, salary * 1 ether, now);
         employees[employeeId] = employee;
         totalSalary += employee.salary;
+        employeesListArr.push(employeeId);
+        totalEmployee++;
     }
 
     /**
@@ -80,8 +84,37 @@ contract Payroll is Ownable {
         _paySurplusWages(employee);
         totalSalary -= employees[employeeId].salary;
         delete employees[employeeId];
+        totalEmployee--;
     }
-    
+
+    /**
+     * [checkEmployee] 检查员工信息
+     *
+     * @author 花夏 liubiao@itoxs.com
+     * @param  index [下标]
+     * @return      [员工所有信息]
+     */
+    function checkEmployee(uint index) public view onlyOwner returns (address employeeId, uint salary, uint lastPayDay) {
+        employeeId = employeesListArr[index];
+        var employee = employees[employeeId];
+        salary = employee.salary;
+        lastPayDay = employee.lastPayDay;
+    }
+
+    /**
+     * [checkInfo] 获取合约信息
+     *
+     * @author 花夏 liubiao@itoxs.com
+     * @return [返回合约的信息 包括总金额、支付次数、员工总数]
+     */
+    function checkInfo() public view returns (uint balance, uint runTimes, uint employeeCount) {
+        balance = this.balance;
+        employeeCount = totalEmployee;
+
+        if (totalSalary > 0) {
+            runTimes = getPayTimes();
+        }
+    }
     /**
      * [updateEmployeeMsg 更新员工地址或者月薪基数]
      * @author 花夏 liubiao@itoxs.com

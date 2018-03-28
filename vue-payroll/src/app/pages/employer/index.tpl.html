@@ -32,6 +32,7 @@
         </Card>
         <div v-if="leftMenuAcName === 'employeeInfo'">
             <div class="add-employee-info">
+                <Tag class="contract-info" color="green">{{balance}} ETH | {{runTimes}} 次</Tag>
                 <Input
                     class="add-address"
                     size="large"

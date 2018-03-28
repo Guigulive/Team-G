@@ -1,4 +1,5 @@
 import {BigNumber} from 'bignumber.js';
+import moment from 'moment';
 import _ from 'lodash';
 export default {
     getInfo(_this) {
@@ -90,6 +91,36 @@ export default {
                 setTimeout(() => {
                     self.location.reload();
                 }, 1000);
+            });
+            return this;
+        });
+    },
+
+    getEmployeeList(_this) {
+        let Payroll = _this.Payroll;
+        let web3 = _this.web3;
+        Payroll.deployed().then((instance) => {
+            instance.checkInfo.call().then((res) => {
+                _this.balance = web3.fromWei(new BigNumber(res[0]).toNumber());
+                _this.runTimes = new BigNumber(res[1]).toNumber();
+                _this.employeeCount = new BigNumber(res[2]).toNumber();
+                return _this;
+            }).then((result) => {
+                let employeeCount = result.employeeCount;
+                var employeesListArr = [];
+                for (var i = 0; i < employeeCount; i++) {
+                    employeesListArr.push(instance.checkEmployee.call(i));
+                }
+                return employeesListArr;
+            }).then((res) => {
+                Promise.all(res).then(values => {
+                    let employees = values.map(value => ({
+                        address: value[0],
+                        salary: web3.fromWei(value[1].toNumber()),
+                        lastPayDay: moment(new Date(new BigNumber(value[2]).toNumber())).format('LLLL')
+                    }));
+                    console.log(employees);
+                });
             });
             return this;
         });

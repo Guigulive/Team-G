@@ -12,6 +12,9 @@ export default {
             info: [],
             addAddress: '',
             addSalary: '',
+            balance: 0,
+            runTimes: 0,
+            employeeCount: 0,
             columns1: [
                 {
                     title: '员工地址',
