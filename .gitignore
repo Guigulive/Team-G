@@ -2,8 +2,9 @@
 
 # dependencies
 /node_modules
-payroll/node_modules
-payroll/build
+vue-payroll/node_modules
+vue-payroll/build
+vue-payroll/vue-build
 # testing
 /coverage
 
