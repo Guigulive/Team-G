@@ -10,6 +10,17 @@
 
 + `npm start`
 
+### 同远程保持一致
+
+```
+git fetch Team-G
+
+git checkout master
+
+git merge Team-G/master
+
+```
+
 #### 测试用例
 
 + 新开`shell`窗口 `testrpc`
