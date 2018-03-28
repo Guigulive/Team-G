@@ -114,7 +114,6 @@ export default {
                 return _this;
             }).then((result) => {
                 let employeeCount = result.employeeCount;
-                console.log(employeeCount);
                 var employeesListArr = [];
                 for (var i = 0; i < employeeCount; i++) {
                     employeesListArr.push(instance.checkEmployee.call(i));
@@ -127,7 +126,6 @@ export default {
                         salary: web3.fromWei(new BigNumber(value[1]).toNumber()),
                         lastPayDay: moment(new Date(new BigNumber(value[2]).toNumber()) * 1000).format('LLLL')
                     }));
-                    console.log(employees);
                     _this.employeeData = employees;
                 });
             });
@@ -146,13 +144,10 @@ export default {
      */
     changePaymentAddress(initialAds, address, index, _this) {
         let Payroll = _this.Payroll;
-        console.log(_this.account);
         Payroll.deployed().then((instance) => {
             instance.changePaymentAddress(initialAds, address, index, _.assign({
                 from: _this.account
-            }, _this.GAS)).then((res) => {
-                console.log(res);
-            });
+            }, _this.GAS));
             return instance;
         });
     },
@@ -160,19 +155,15 @@ export default {
     // Error: VM Exception while processing transaction: invalid opcode
     updateEmployeeSalary(address, tempSalary, _this) {
         let Payroll = _this.Payroll;
-        console.log(_this.account);
         Payroll.deployed().then((instance) => {
             instance.updateEmployeeMsg(address, +tempSalary, _.assign({
                 from: _this.account
-            }, _this.GAS)).then((res) => {
-                console.log(res);
-            });
+            }, _this.GAS));
             return instance;
         });
     },
     delEmployee(address, _this) {
         let Payroll = _this.Payroll;
-        console.log(address);
         Payroll.deployed().then((instance) => {
             instance.removeEmployee(address, _.assign({
                 from: _this.account

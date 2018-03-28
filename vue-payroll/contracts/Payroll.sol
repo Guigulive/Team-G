@@ -55,8 +55,10 @@ contract Payroll is Ownable {
      */
     function _paySurplusWages(Employee employee) private {
         // assert(employee.id != 0x0);
-        uint paySurplusWages = employee.salary * (now - employee.lastPayDay) / payStep;
-        employee.id.transfer(paySurplusWages);
+        uint payment = employee.salary
+                    .mul(now.sub(employee.lastPayDay))
+                    .div(payStep);
+        employee.id.transfer(payment);
     }
 
     /**
@@ -131,7 +133,7 @@ contract Payroll is Ownable {
         // 我已经在支付函数里做了判断拉~~
         _paySurplusWages(employee);
         totalSalary -= employee.salary;
-        employees[ads].id = ads;
+        // employees[ads].id = ads;
         employees[ads].salary = sly * 1 ether;
         employees[ads].lastPayDay = now;
         totalSalary += employees[ads].salary;
@@ -146,14 +148,13 @@ contract Payroll is Ownable {
      * @return     [description]
      */
     function changePaymentAddress(address initialAds, address ads, uint index) public onlyOwner employeeExist(initialAds) {
-        // 查找存在的需要移除的员工
         var employee = employees[initialAds];
         _paySurplusWages(employee);
-        uint salary = employee.salary;
         employeesListArr[index] = ads;
-        employees[initialAds].id = ads;
-        employees[ads].lastPayDay = now;
-        employees[ads].salary = salary;
+        // 赋值并删除
+        Employee memory employeeTemp = Employee(ads, employee.salary, now);
+        employees[ads] = employeeTemp;
+        delete employees[employee.id];
     }
     
     /**
