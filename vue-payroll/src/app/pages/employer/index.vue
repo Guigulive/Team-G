@@ -8,10 +8,17 @@ export default {
     data() {
         return {
             loading: false,
+            leftMenuAcName: 'contractInfo',
             info: []
         };
     },
-    watch: {},
+    watch: {
+        leftMenuAcName(newVal, oldVal) {
+            if (newVal === 'contractInfo') {
+                contractInfo.init(this);
+            }
+        }
+    },
     mounted() {
         this.init();
     },
@@ -42,6 +49,9 @@ export default {
                     contractInfo.addFund(this.value);
                 }
             });
+        },
+        selectLeftMenu(name) {
+            this.leftMenuAcName = name;
         }
     }
 };

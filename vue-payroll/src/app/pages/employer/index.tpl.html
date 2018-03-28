@@ -1,12 +1,13 @@
 <div id="employer" class="main">
     <Menu
         class="left-menu"
-        active-name="1">
-        <MenuItem name="1">
+        :active-name="leftMenuAcName"
+        @on-select="selectLeftMenu">
+        <MenuItem name="contractInfo">
             <Icon type="document-text"></Icon>
             合约信息
         </MenuItem>
-        <MenuItem name="2">
+        <MenuItem name="employeeInfo">
             <Icon type="person-stalker"></Icon>
             员工信息
         </MenuItem>
