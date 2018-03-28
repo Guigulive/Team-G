@@ -8,10 +8,13 @@ export default {
     data() {
         return {
             loading: false,
+            delModal: false,
             leftMenuAcName: 'contractInfo',
             info: [],
             addAddress: '',
+            delAddress: '',
             tempAddress: '',
+            tempSalary: 1,
             addSalary: '',
             balance: 0,
             runTimes: 0,
@@ -46,7 +49,7 @@ export default {
                                 },
                                 on: {
                                     click: () => {
-                                        this.show(params.index);
+                                        this.delEmployee(params);
                                     }
                                 }
                             }, '删除'),
@@ -71,7 +74,7 @@ export default {
                                 },
                                 on: {
                                     click: () => {
-                                        this.show(params.index);
+                                        this.updateEmployeeSalary(params);
                                     }
                                 }
                             }, '更新月薪')
@@ -149,7 +152,6 @@ export default {
             contractInfo.getEmployeeList(this);
         },
         updateAddress(params) {
-            console.log(params);
             var me = this;
             this.$Modal.confirm({
                 title: '请使用新地址替换当前地址',
@@ -175,6 +177,42 @@ export default {
                     this.tempAddress = '';
                 }
             });
+        },
+        updateEmployeeSalary(params) {
+            var me = this;
+            let address = params.row.address;
+            this.$Modal.confirm({
+                title: '请输入最新的月薪',
+                render: (h) => {
+                    return h('Input', {
+                        props: {
+                            value: +params.row.salary,
+                            autofocus: true,
+                            placeholder: '请输入最新的月薪'
+                        },
+                        on: {
+                            input: (val) => {
+                                this.tempSalary = val;
+                            }
+                        }
+                    });
+                },
+                onOk: () => {
+                    contractInfo.updateEmployeeSalary(address, this.tempSalary, me);
+                    me.tempSalary = 1;
+                },
+                onCancel: () => {
+                    this.tempSalary = 1;
+                }
+            });
+        },
+        delEmployee(params) {
+            this.delModal = true;
+            this.delAddress = params.row.address;
+        },
+        del() {
+            contractInfo.delEmployee(this.delAddress, this);
+            this.delAddress = '';
         }
     }
 };

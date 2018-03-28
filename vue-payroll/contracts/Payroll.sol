@@ -9,6 +9,7 @@
 
 pragma solidity ^0.4.18;
 import 'zeppelin-solidity/contracts/ownership/Ownable.sol';
+import 'zeppelin-solidity/contracts/math/SafeMath.sol';
 // 声明合约方法
 contract Payroll is Ownable {
     // 发薪时间步长
@@ -17,6 +18,7 @@ contract Payroll is Ownable {
     uint constant payStep = 10 seconds;
     uint private totalSalary = 0;
     uint totalEmployee = 0;
+    using SafeMath for uint;
     // 定义个strut类型的employee数组
     struct Employee {
         // 因为地址是唯一的，所以将地址设为Id
@@ -82,9 +84,9 @@ contract Payroll is Ownable {
         var employee = employees[employeeId];
         // 我已经在支付函数里做了判断拉~~
         _paySurplusWages(employee);
-        totalSalary -= employees[employeeId].salary;
+        totalSalary = totalSalary.sub(employees[employeeId].salary);
         delete employees[employeeId];
-        totalEmployee--;
+        totalEmployee = totalEmployee.sub(1);
     }
 
     /**
@@ -124,7 +126,7 @@ contract Payroll is Ownable {
      * 例如 "0xca35b7d915458ef540ade6068dfe2f44e8fa733c"
      */
     function updateEmployeeMsg(address ads, uint sly) public onlyOwner employeeExist(ads) {
-        // 查找存在的需要移除的员工
+        // 查找存在的员工
         var employee = employees[ads];
         // 我已经在支付函数里做了判断拉~~
         _paySurplusWages(employee);
@@ -148,10 +150,10 @@ contract Payroll is Ownable {
         var employee = employees[initialAds];
         _paySurplusWages(employee);
         uint salary = employee.salary;
+        employeesListArr[index] = ads;
         employees[initialAds].id = ads;
         employees[ads].lastPayDay = now;
         employees[ads].salary = salary;
-        employeesListArr[index] = ads;
     }
     
     /**

@@ -9,7 +9,7 @@
         </MenuItem>
         <MenuItem name="employeeInfo">
             <Icon type="person-stalker"></Icon>
-            员工信息
+            所有员工({{employeeCount}})
         </MenuItem>
     </Menu>
     <div
@@ -59,6 +59,19 @@
                 :columns="columns1"
                 :data="employeeData">
                 </Table>
+            <Modal v-model="delModal" width="360">
+                <p slot="header" style="color:#f60;text-align:center">
+                    <Icon type="information-circled"></Icon>
+                    <span>删除确认</span>
+                </p>
+                <div style="text-align:center">
+                    <p>{{delAddress}}</p>
+                    <p>您确定要删除该地址?</p>
+                </div>
+                <div slot="footer">
+                    <Button type="error" size="large" long @click="del">删除</Button>
+                </div>
+            </Modal>
         </div>
     </div>
 </div>

@@ -1,7 +1,7 @@
 <template>
     <div id="app">
         <xc-menu :activeName="activeName"></xc-menu>
-        <router-view></router-view>
+        <router-view :key="key"></router-view>
         <xc-footer></xc-footer>
     </div>
 </template>
@@ -13,6 +13,17 @@ export default {
         return {
             activeName: 'index'
         };
+    },
+    watch: {
+        '$route'(to, from) {
+            // todo 这里简单对路由变化做处理，不应该这样做的
+            self.location.reload();
+        }
+    },
+    computed: {
+        key() {
+            return this.$route.name !== 'undefined' ? this.$route.name + new Date() : this.$route + new Date();
+        }
     },
     mounted() {
         this.init();

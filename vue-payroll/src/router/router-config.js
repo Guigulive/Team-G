@@ -7,6 +7,7 @@
 
 import Index from '@pages/index/';
 import Employer from '@pages/employer/';
+import Employee from '@pages/employee/';
 export default [
     {
         path: '/',
@@ -17,5 +18,10 @@ export default [
         path: '/employer',
         name: 'employer',
         component: Employer
+    },
+    {
+        path: '/employee',
+        name: 'employee',
+        component: Employee
     }
 ];

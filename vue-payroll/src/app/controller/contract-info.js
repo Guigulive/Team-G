@@ -6,6 +6,7 @@ export default {
         var me = this;
         window.addEventListener('load', function() {
             me.init(_this);
+            me.getEmployeeList(_this);
         });
         // todo 路由切换做单独判断
         // me.init(_this);
@@ -113,6 +114,7 @@ export default {
                 return _this;
             }).then((result) => {
                 let employeeCount = result.employeeCount;
+                console.log(employeeCount);
                 var employeesListArr = [];
                 for (var i = 0; i < employeeCount; i++) {
                     employeesListArr.push(instance.checkEmployee.call(i));
@@ -122,8 +124,8 @@ export default {
                 Promise.all(res).then(values => {
                     let employees = values.map(value => ({
                         address: value[0],
-                        salary: web3.fromWei(value[1].toNumber()),
-                        lastPayDay: moment(new Date(new BigNumber(value[2]).toNumber())).format('LLLL')
+                        salary: web3.fromWei(new BigNumber(value[1]).toNumber()),
+                        lastPayDay: moment(new Date(new BigNumber(value[2]).toNumber()) * 1000).format('LLLL')
                     }));
                     console.log(employees);
                     _this.employeeData = employees;
@@ -133,8 +135,18 @@ export default {
         });
     },
 
+    /**
+     * [changePaymentAddress] 更换员工地址
+     *
+     * @author 花夏 liubiao@itoxs.com
+     * @param  {String} initialAds [原始地址]
+     * @param  {String} address    [新地址]
+     * @param  {Number} index      [下标]
+     * @param  {Object} _this      [传入的对象]
+     */
     changePaymentAddress(initialAds, address, index, _this) {
         let Payroll = _this.Payroll;
+        console.log(_this.account);
         Payroll.deployed().then((instance) => {
             instance.changePaymentAddress(initialAds, address, index, _.assign({
                 from: _this.account
@@ -142,9 +154,32 @@ export default {
                 console.log(res);
             });
             return instance;
-        }).then((result) => {
-            console.log(result);
-            // _self.getEmployeeList(_this);
+        });
+    },
+    // todo 不是owner
+    // Error: VM Exception while processing transaction: invalid opcode
+    updateEmployeeSalary(address, tempSalary, _this) {
+        let Payroll = _this.Payroll;
+        console.log(_this.account);
+        Payroll.deployed().then((instance) => {
+            instance.updateEmployeeMsg(address, +tempSalary, _.assign({
+                from: _this.account
+            }, _this.GAS)).then((res) => {
+                console.log(res);
+            });
+            return instance;
+        });
+    },
+    delEmployee(address, _this) {
+        let Payroll = _this.Payroll;
+        console.log(address);
+        Payroll.deployed().then((instance) => {
+            instance.removeEmployee(address, _.assign({
+                from: _this.account
+            }, _this.GAS)).then((res) => {
+                _this.delModal = false;
+            });
+            return instance;
         });
     }
 };
