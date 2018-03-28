@@ -18,6 +18,8 @@ class Fund extends Component {
     payroll.addFund({
       from: account,
       value: web3.toWei(this.state.fund)
+    }).catch(e => {
+      console.log('addFund error is', e);
     });
   }
 

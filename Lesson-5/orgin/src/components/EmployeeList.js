@@ -28,7 +28,7 @@ class EmployeeList extends Component {
     super(props);
 
     this.state = {
-      loading: true,
+      loading: false,
       employees: [],
       showModal: false
     };
@@ -65,15 +65,80 @@ class EmployeeList extends Component {
   }
 
   loadEmployees(employeeCount) {
+    const { payroll, account, web3 } = this.props;
+    const employeePool = [];
+
+    for ( let i = 0 ; i < employeeCount; i++){
+      employeePool.push(payroll.checkEmployee.call(i, {from: account}));
+    }
+
+    Promise.all(employeePool).then(results =>{
+      const employees = results.map(value => ({
+          key: value[0],
+          address: value[0],
+          salary: web3.fromWei(value[1].toNumber()),
+          lastPaidDay: new Date(value[2].toNumber() * 1000).toString(),
+      }));
+
+      this.setState({
+        employees: employees,
+        loading: false
+      })
+    });
   }
 
   addEmployee = () => {
+    const { payroll, account } = this.props;
+    const { address, salary, employees, loading, showModal } = this.state;
+    payroll.addEmployee(address, salary, {
+      from: account,
+      gas: 3000000,
+    }).then(() => {
+      const newEmployee = {
+        address,
+        salary,
+        key: address,
+        lastPaidDay: new Date().toString(),
+      };
+
+      this.setState({
+        address: '',
+        salary: '',
+        showModal: false,
+        loading: false,
+        employees: employees.concat([newEmployee]),
+      });
+    });
   }
 
   updateEmployee = (address, salary) => {
+    const { payroll, account } = this.props;
+    const { employees } = this.state;
+    payroll.updateEmployee(address, salary, {
+      from: account,
+      gas: 3000000,
+    }).then(() => {
+      this.setState({
+        employees: employees.map((e) => {
+          if(e.address == address) e.salary = salary;
+          return e;
+        })
+      });
+    });
   }
 
   removeEmployee = (employeeId) => {
+    const { payroll, account } = this.props;
+    const { employees } = this.state;
+
+    payroll.removeEmployee(employeeId, {
+      from : account,
+      gas: 1000000
+    }).then(() => {
+      this.setState({
+        employees: employees.filter(e => e.address != employeeId)
+      })
+    })
   }
 
   renderModal() {
