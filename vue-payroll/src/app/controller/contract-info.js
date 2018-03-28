@@ -60,10 +60,8 @@ export default {
         var me = this;
         let Payroll = me.self.Payroll;
         let web3 = me.self.web3;
-        let PayrollInstance;
         Payroll.deployed().then((instance) => {
-            PayrollInstance = instance;
-            PayrollInstance.addFund(_.assign({
+            instance.addFund(_.assign({
                 from: me.self.account,
                 value: web3.toWei(value)
             }, _this.GAS)).then(() => {
@@ -75,16 +73,20 @@ export default {
         });
     },
 
+    /**
+     * [addEmpolyee] 添加一个员工
+     *
+     * @author 花夏 liubiao@itoxs.com
+     * @param  {String} address [员工地址]
+     * @param  {Number} salary  [员工月薪]
+     * @param  {Object} _this   [调用的当前对象]
+     */
     addEmpolyee(address, salary, _this) {
-        var me = this;
-        let Payroll = me.self.Payroll;
-        // let web3 = me.self.web3;
-        let PayrollInstance;
+        let Payroll = _this.Payroll;
         Payroll.deployed().then((instance) => {
-            PayrollInstance = instance;
-            PayrollInstance.addEmployee(address, salary, {
-                from: me.self.account
-            }).then(() => {
+            instance.addEmployee(address, salary, _.assign({
+                from: _this.account
+            }, _this.GAS)).then(() => {
                 setTimeout(() => {
                     self.location.reload();
                 }, 1000);

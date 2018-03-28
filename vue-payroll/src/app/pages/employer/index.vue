@@ -11,7 +11,7 @@ export default {
             leftMenuAcName: 'contractInfo',
             info: [],
             addAddress: '',
-            addSalary: 0,
+            addSalary: '',
             columns1: [
                 {
                     title: '员工地址',
@@ -80,9 +80,9 @@ export default {
     },
     watch: {
         leftMenuAcName(newVal, oldVal) {
-            if (newVal === 'contractInfo') {
-                contractInfo.init(this);
-            }
+            // if (newVal === 'contractInfo') {
+            //     contractInfo.init(this);
+            // }
         }
     },
     mounted() {
@@ -118,13 +118,31 @@ export default {
         },
         selectLeftMenu(name) {
             this.leftMenuAcName = name;
+            switch (name) {
+                case 'contractInfo':
+                    contractInfo.init(this);
+                    break;
+                case 'employeeInfo':
+                    this.getEmployeeList();
+                    break;
+                default:
+                    contractInfo.init(this);
+                    break;
+            }
         },
         addEmpolyee() {
-            if (!this.web3.isAddress(this.employeeAds)) {
+            if (!this.web3.isAddress(this.addAddress)) {
                 this.$Message.error('请输入一个以太地址!');
                 return;
             }
-            contractInfo.addEmpolyee(this.employeeAds, 1, this);
+            if (this.addSalary <= 0) {
+                this.$Message.error('月薪必须大于0!');
+                return;
+            }
+            contractInfo.addEmpolyee(this.addAddress, 1, this);
+        },
+        getEmployeeList() {
+            contractInfo.getEmployeeList(this);
         }
     }
 };
