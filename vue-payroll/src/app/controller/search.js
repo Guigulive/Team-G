@@ -21,7 +21,7 @@ export default {
             // salary
             let salary = web3.fromWei(new BigNumber(result[1]).toNumber());
             // lastPayDay
-            let lastPayDay = moment(new Date(new BigNumber(result[2]).toNumber())).format('LLLL');
+            let lastPayDay = moment(new Date(new BigNumber(result[2]).toNumber()) * 1000).format('LLLL');
             let employeeInfo = {
                 employeeAds: {
                     name: '员工地址',
