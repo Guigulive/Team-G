@@ -7,6 +7,7 @@ export default {
     components: {},
     data() {
         return {
+            info: [],
             employeeData: [],
             employee: {
                 address: '',
@@ -31,6 +32,7 @@ export default {
         init() {
             var me = this;
             window.addEventListener('load', function() {
+                contractInfo.init(me);
                 contractInfo.getEmployeeList(me);
             });
         },

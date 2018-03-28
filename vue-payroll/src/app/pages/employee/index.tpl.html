@@ -3,6 +3,15 @@
         <p slot="title">我的地址</p>
         <p>{{employee.address}}</p>
     </Card>
+    <Card
+        class="card"
+        v-for="item in info"
+        :key="item.id">
+        <p slot="title">{{item.name}}</p>
+        <p>
+            {{item.value}}
+        </p>
+    </Card>
     <Row>
         <Col span="8" :xs="{ span: 6, offset: 2 }">
             <Card>
