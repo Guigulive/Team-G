@@ -100,6 +100,8 @@ export default {
             }, _this.GAS)).then((res) => {
                 var newEmployeeIsNull = instance.NewEmployeeIsNull((err, result) => {
                     if (!err) {
+                        _this.addAddress = '';
+                        _this.addSalary = '';
                         me.getEmployeeList(_this);
                     }
                     newEmployeeIsNull.stopWatching();
@@ -156,31 +158,69 @@ export default {
      */
     changePaymentAddress(initialAds, address, index, _this) {
         let Payroll = _this.Payroll;
+        let me = this;
         Payroll.deployed().then((instance) => {
             instance.changePaymentAddress(initialAds, address, index, _.assign({
                 from: _this.account
-            }, _this.GAS));
+            }, _this.GAS)).then((res) => {
+                var updateInfo = instance.UpdateInfo((err, result) => {
+                    if (!err) {
+                        me.getEmployeeList(_this);
+                    }
+                    updateInfo.stopWatching();
+                });
+            });
             return instance;
         });
     },
-    // todo 不是owner
-    // Error: VM Exception while processing transaction: invalid opcode
+
+    /**
+     * [updateEmployeeSalary]  更新员工月薪
+     *
+     * @author 花夏 liubiao@itoxs.com
+     * @param  {String} address    [员工地址]
+     * @param  {Number} tempSalary [员工新的月薪]
+     * @param  {Object} _this      [当前对象]
+     */
     updateEmployeeSalary(address, tempSalary, _this) {
         let Payroll = _this.Payroll;
+        let me = this;
         Payroll.deployed().then((instance) => {
             instance.updateEmployeeMsg(address, +tempSalary, _.assign({
                 from: _this.account
-            }, _this.GAS));
+            }, _this.GAS)).then((res) => {
+                var updateInfo = instance.UpdateInfo((err, result) => {
+                    if (!err) {
+                        me.getEmployeeList(_this);
+                    }
+                    updateInfo.stopWatching();
+                });
+            });
             return instance;
         });
     },
+
+    /**
+     * [delEmployee]  删除一个员工
+     *
+     * @author 花夏 liubiao@itoxs.com
+     * @param  {String} address [员工地址]
+     * @param  {Object} _this   [当前对象]
+     */
     delEmployee(address, _this) {
         let Payroll = _this.Payroll;
+        let me = this;
         Payroll.deployed().then((instance) => {
             instance.removeEmployee(address, _.assign({
                 from: _this.account
             }, _this.GAS)).then((res) => {
                 _this.delModal = false;
+                var updateInfo = instance.UpdateInfo((err, result) => {
+                    if (!err) {
+                        me.getEmployeeList(_this);
+                    }
+                    updateInfo.stopWatching();
+                });
             });
             return instance;
         });

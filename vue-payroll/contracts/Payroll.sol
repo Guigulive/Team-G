@@ -58,6 +58,12 @@ contract Payroll is Ownable {
     event NewFund(
         uint balance
     );
+    /**
+     * [UpdateInfo] 更新信息
+     */
+    event UpdateInfo(
+        address employee
+    );
 
     /**
      * [_paySurplusWages 内置支付剩余薪水函数，有木有和js类似？]
@@ -109,6 +115,7 @@ contract Payroll is Ownable {
         totalSalary = totalSalary.sub(employees[employeeId].salary);
         delete employees[employeeId];
         totalEmployee = totalEmployee.sub(1);
+        UpdateInfo(employeeId);
     }
 
     /**
@@ -134,7 +141,6 @@ contract Payroll is Ownable {
     function checkInfo() public view returns (uint balance, uint runTimes, uint employeeCount) {
         balance = this.balance;
         employeeCount = totalEmployee;
-
         if (totalSalary > 0) {
             runTimes = getPayTimes();
         }
@@ -157,6 +163,7 @@ contract Payroll is Ownable {
         employees[ads].salary = sly.mul(1 ether);
         employees[ads].lastPayDay = now;
         totalSalary = totalSalary.add(employees[ads].salary);
+        UpdateInfo(ads);
     }
 
     /**
@@ -175,6 +182,7 @@ contract Payroll is Ownable {
         Employee memory employeeTemp = Employee(ads, employee.salary, now);
         employees[ads] = employeeTemp;
         delete employees[employee.id];
+        UpdateInfo(ads);
     }
     
     /**

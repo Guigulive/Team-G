@@ -6,6 +6,7 @@
             v-model="value"
             :step="1"
             show-stops
+            @on-input="valueChange"
             @on-change="valueChange"></Slider>
     </div>
 </template>
