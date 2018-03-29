@@ -40,9 +40,21 @@ contract Payroll is Ownable {
         _;
     }
 
+    /**
+     * [NewEmployeeExist] 新增一个已存在的员工
+     */
     event NewEmployeeExist(
         address employee
     );
+    /**
+     * [NewEmployeeIsNull] 新增一个不存在的员工
+     */
+    event NewEmployeeIsNull(
+        address employee
+    );
+    /**
+     * [NewFund] 增加余额
+     */
     event NewFund(
         uint balance
     );
@@ -77,6 +89,7 @@ contract Payroll is Ownable {
             totalEmployee = totalEmployee.add(1);
             employeesListArr.push(employeeId);
             totalSalary = totalSalary.add(employees[employeeId].salary);
+            NewEmployeeIsNull(employeeId);
         }else {
             NewEmployeeExist(employeeId);
             revert();

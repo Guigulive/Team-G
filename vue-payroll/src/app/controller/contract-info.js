@@ -87,6 +87,7 @@ export default {
      */
     addEmpolyee(address, salary, _this) {
         let Payroll = _this.Payroll;
+        let me = this;
         Payroll.deployed().then((instance) => {
             var newEmployeeExist = instance.NewEmployeeExist((err, result) => {
                 if (!err) {
@@ -96,7 +97,14 @@ export default {
             });
             instance.addEmployee(address, salary, _.assign({
                 from: _this.account
-            }, _this.GAS));
+            }, _this.GAS)).then((res) => {
+                var newEmployeeIsNull = instance.NewEmployeeIsNull((err, result) => {
+                    if (!err) {
+                        me.getEmployeeList(_this);
+                    }
+                    newEmployeeIsNull.stopWatching();
+                });
+            });
             return this;
         });
     },
