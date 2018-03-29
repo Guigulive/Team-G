@@ -30,6 +30,7 @@ contract Payroll is Ownable {
     // 使用map结构方便查询降低gas
     mapping (address => Employee) public employees;
     address[] employeesListArr;
+
     /**
      * 定义一个modifier 判断是否包含这个员工
      */
@@ -39,14 +40,13 @@ contract Payroll is Ownable {
         _;
     }
 
-    /**
-     *  根据传入的 msg.sender判断是否具有操作权限
-     */
-    modifier isEmpolyee(address employeeId) {
-        var employee = employees[employeeId];
-        assert(employee.id == employeeId);
-        _;
-    }
+    event NewEmployeeExist(
+        address employee
+    );
+    event NewFund(
+        uint balance
+    );
+
     /**
      * [_paySurplusWages 内置支付剩余薪水函数，有木有和js类似？]
      * @author 花夏 liubiao@itoxs.com
@@ -68,12 +68,19 @@ contract Payroll is Ownable {
      * @param  salary    [应付的月薪]
      */
     function addEmployee(address employeeId, uint salary) public onlyOwner {
-        // 添加员工
-        Employee memory employee = Employee(employeeId, salary * 1 ether, now);
-        employees[employeeId] = employee;
-        totalSalary += employee.salary;
-        employeesListArr.push(employeeId);
-        totalEmployee++;
+        var employee = employees[employeeId];
+        // 如果不存在
+        if (employee.id == 0x0) {
+            // 添加员工
+            Employee memory employeeTemp = Employee(employeeId, salary.mul(1 ether), now);
+            employees[employeeId] = employeeTemp;
+            totalEmployee = totalEmployee.add(1);
+            employeesListArr.push(employeeId);
+            totalSalary = totalSalary.add(employees[employeeId].salary);
+        }else {
+            NewEmployeeExist(employeeId);
+            revert();
+        }
     }
 
     /**
@@ -132,11 +139,11 @@ contract Payroll is Ownable {
         var employee = employees[ads];
         // 我已经在支付函数里做了判断拉~~
         _paySurplusWages(employee);
-        totalSalary -= employee.salary;
+        totalSalary = totalSalary.sub(employee.salary);
         // employees[ads].id = ads;
-        employees[ads].salary = sly * 1 ether;
+        employees[ads].salary = sly.mul(1 ether);
         employees[ads].lastPayDay = now;
-        totalSalary += employees[ads].salary;
+        totalSalary = totalSalary.add(employees[ads].salary);
     }
 
     /**
@@ -164,6 +171,7 @@ contract Payroll is Ownable {
      */
     function addFund() public payable returns(uint) {
         // this 指向合约对象
+        NewFund(this.balance);
         return this.balance;
     }
 
@@ -173,7 +181,7 @@ contract Payroll is Ownable {
      * @return [返回合约地址还能支付薪水的次数]
      */
     function getPayTimes() view public returns(uint) {
-        uint times = totalSalary == 0 ? 0 : this.balance / totalSalary;
+        uint times = totalSalary == 0 ? 0 : this.balance.div(totalSalary);
         return times;
     }
 

@@ -14,12 +14,7 @@ export default {
             activeName: 'index'
         };
     },
-    watch: {
-        '$route'(to, from) {
-            // todo 这里简单对路由变化做处理，不应该这样做的
-            self.location.reload();
-        }
-    },
+    watch: {},
     computed: {
         key() {
             return this.$route.name !== 'undefined' ? this.$route.name + new Date() : this.$route + new Date();

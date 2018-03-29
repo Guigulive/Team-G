@@ -1,6 +1,6 @@
 <div id="employee">
     <Row class="contract-info" :gutter="16" type="flex">
-        <Col span="8" v-for="item in info">
+        <Col span="8" v-for="item in info" :key="item.id">
             <Card
                 class="card">
                 <p slot="title">{{item.name}}</p>

@@ -23,7 +23,6 @@ export default {
         let Payroll = _this.Payroll;
         let web3 = _this.web3;
         let PayrollInstance;
-        // _this.info = [];
         Payroll.deployed().then((instance) => {
             PayrollInstance = instance;
             _this.info.push({
@@ -63,14 +62,17 @@ export default {
         let Payroll = me.self.Payroll;
         let web3 = me.self.web3;
         Payroll.deployed().then((instance) => {
+            var newFund = instance.NewFund((err, result) => {
+                if (!err) {
+                    _this.info = [];
+                    me.init(_this);
+                }
+                newFund.stopWatching();
+            });
             instance.addFund(_.assign({
                 from: me.self.account,
                 value: web3.toWei(value)
-            }, _this.GAS)).then(() => {
-                setTimeout(() => {
-                    self.location.reload();
-                }, 1000);
-            });
+            }, _this.GAS));
             return this;
         });
     },
@@ -86,13 +88,15 @@ export default {
     addEmpolyee(address, salary, _this) {
         let Payroll = _this.Payroll;
         Payroll.deployed().then((instance) => {
+            var newEmployeeExist = instance.NewEmployeeExist((err, result) => {
+                if (!err) {
+                    _this.$Message.error('该地址已存在!请不要重复添加');
+                }
+                newEmployeeExist.stopWatching();
+            });
             instance.addEmployee(address, salary, _.assign({
                 from: _this.account
-            }, _this.GAS)).then(() => {
-                setTimeout(() => {
-                    self.location.reload();
-                }, 1000);
-            });
+            }, _this.GAS));
             return this;
         });
     },
