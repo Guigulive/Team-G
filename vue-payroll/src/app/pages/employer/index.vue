@@ -146,7 +146,7 @@ export default {
                 this.$Message.error('月薪必须大于0!');
                 return;
             }
-            contractInfo.addEmpolyee(this.addAddress, this.addSalary, this);
+            contractInfo.addEmpolyee(this.addAddress, +this.addSalary, this);
         },
         getEmployeeList() {
             contractInfo.getEmployeeList(this);
