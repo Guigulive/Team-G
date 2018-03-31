@@ -1,6 +1,14 @@
 import {BigNumber} from 'bignumber.js';
 import moment from 'moment';
 export default {
+
+    /**
+     * [searchOfAds] 根据查询是是否员工
+     *
+     * @author 花夏 liubiao@itoxs.com
+     * @param  {String} ads   [查询地址]
+     * @param  {Object} _this [当前vue对象]
+     */
     searchOfAds(ads, _this) {
         var web3 = _this.web3;
         _this.loading = false;

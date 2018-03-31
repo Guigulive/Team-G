@@ -3,7 +3,7 @@
 import search from '@controller/search';
 export default {
     name: 'index',
-    props: ['web3', 'instance'],
+    props: ['web3', 'instance', 'gas', 'account'],
     components: {},
     data() {
         return {

@@ -4,7 +4,7 @@ import contractInfo from '@controller/contract-info';
 import modalHtml from './Modal-html/';
 export default {
     name: 'employer',
-    props: ['web3', 'instance'],
+    props: ['web3', 'instance', 'gas', 'account'],
     components: {},
     data() {
         return {
