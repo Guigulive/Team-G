@@ -10,14 +10,14 @@ import config from '@/common/config';
 import PayrollContract from '../build/contracts/Payroll.json';
 
 import 'iview/dist/styles/iview.css';
-// import web3ContractUtil from '@/common/vue-util/web3-contract';
 
 import TopMenu from '@components/top-menu/';
 import XCFooter from '@components/footer/';
-// Vue.use(web3ContractUtil);
+
 moment.locale('zh-cn');
 Vue.config.productionTip = false;
 Vue.use(iView);
+
 Vue.component('xc-footer', XCFooter);
 Vue.component('xc-menu', TopMenu);
 Vue.config.productionTip = false;

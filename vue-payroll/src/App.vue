@@ -40,6 +40,10 @@ export default {
     },
     methods: {
         init() {
+            this.$Message.config({
+                top: 55,
+                duration: 3
+            });
             var activeName = this.$route.name;
             this.activeName = activeName;
             this.globalSpinShow = false;

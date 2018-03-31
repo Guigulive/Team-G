@@ -54,7 +54,12 @@ export default {
         _this.instance.addFund(_.assign({
             from: _this.account,
             value: _this.web3.toWei(value)
-        }, _this.gas));
+        }, _this.gas)).catch((err) => {
+            if (!err) {
+                _this.$Message.error('你的账户可能不是管理员账户,请检查!');
+                _this.addLoading = false;
+            }
+        });
     },
 
     /**
@@ -67,25 +72,50 @@ export default {
      */
     addEmpolyee(address, salary, _this) {
         let me = this;
-        var newEmployeeExist = _this.instance.NewEmployeeExist((err, result) => {
-            if (!err) {
-                _this.$Message.error('该地址已存在!请不要重复添加');
-            }
-            newEmployeeExist.stopWatching();
-        });
-        _this.instance.addEmployee(address, salary, _.assign({
+        if (this.checkEmployeeReapt(address, _this)) {
+            _this.$Message.error('该地址已存在!请不要重复添加');
+            _this.addAddress = '';
+            _this.addSalary = '';
+            _this.addEmpLoading = false;
+            return;
+        }
+        _this.instance.addEmployee(address, +salary, _.assign({
             from: _this.account
         }, _this.gas)).then((res) => {
             var newEmployeeIsNull = _this.instance.NewEmployeeIsNull((err, result) => {
                 if (!err) {
-                    _this.addAddress = '';
-                    _this.addSalary = '';
                     me.getEmployeeList(_this);
-                    _this.addEmpLoading = false;
                 }
                 newEmployeeIsNull.stopWatching();
             });
+            _this.addAddress = '';
+            _this.addSalary = '';
+            _this.addEmpLoading = false;
+        }).catch((err) => {
+            if (!!err) {
+                _this.$Message.error('添加员工失败,请检查!');
+                _this.addAddress = '';
+                _this.addSalary = '';
+                me.getEmployeeList(_this);
+                _this.addEmpLoading = false;
+            }
         });
+    },
+
+    /**
+     * [checkEmployeeReapt]  判断数组列表里面是否包含该地址
+     *
+     * @author 花夏 liubiao@itoxs.com
+     * @param  {String} ads   [查找地址]
+     * @param  {Object} _this [当前vue对象]
+     * @return {Boolen}       [是否重复]
+     */
+    checkEmployeeReapt(ads, _this) {
+        let employeeList = _this.employeeData;
+        var res = employeeList.filter(function(item, index, array) {
+            return item.address === ads;
+        });
+        return res.length > 0;
     },
 
     /**
@@ -140,6 +170,11 @@ export default {
                 _this.updateLoading = false;
                 updateInfo.stopWatching();
             });
+        }).catch((err) => {
+            if (!!err) {
+                _this.$Message.error('更新地址失败,可能是合约没钱了,请检查!');
+                _this.updateLoading = false;
+            }
         });
     },
 
@@ -163,6 +198,11 @@ export default {
                 _this.updateSalLoading = false;
                 updateInfo.stopWatching();
             });
+        }).catch((err) => {
+            if (!!err) {
+                _this.$Message.error('更新月薪失败,可能是合约没钱了,请检查!');
+                _this.updateSalLoading = false;
+            }
         });
     },
 
@@ -174,12 +214,13 @@ export default {
      * @param  {Object} _this   [当前对象]
      */
     delEmployee(address, _this) {
+        console.log(address);
         let me = this;
         _this.delEmpLoading = true;
+        _this.delModal = false;
         _this.instance.removeEmployee(address, _.assign({
             from: _this.account
         }, _this.gas)).then((res) => {
-            _this.delModal = false;
             var updateInfo = _this.instance.UpdateInfo((err, result) => {
                 if (!err) {
                     me.getEmployeeList(_this);
@@ -187,6 +228,15 @@ export default {
                 _this.delEmpLoading = false;
                 updateInfo.stopWatching();
             });
+        }).catch((err) => {
+            if (!!err) {
+                _this.$Message.error({
+                    content: '删除员工失败,可能是合约没钱了,请检查!',
+                    onClose() {
+                        _this.delEmpLoading = false;
+                    }
+                });
+            }
         });
     }
 };

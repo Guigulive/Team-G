@@ -86,6 +86,29 @@ contract Payroll is Ownable {
     }
 
     /**
+     * [_isRepeatEmployee] 判断是否存在
+     *
+     * @author 花夏 liubiao@itoxs.com
+     * @param      ads [传入判断地址]
+     * @return         [返回存在与否以及下标]
+     */
+    function _isRepeatEmployee(address ads) private view returns(bool repeat, uint index) {
+        uint len = employeesListArr.length;
+        uint num = 0;
+        uint _index;
+        for (uint i = 0; i < len; i++) {
+            if (employeesListArr[i] != ads) {
+                num++;
+            } else {
+                _index = i;
+            }
+        }
+        repeat = (num != len);
+        index =_index;
+        
+    }
+
+    /**
      * [addEmployee 添加一个新员工地址]
      * @author 花夏 liubiao@itoxs.com
      * @param  employeeId [新员工地址]
@@ -98,8 +121,6 @@ contract Payroll is Ownable {
             // 添加员工
             Employee memory employeeTemp = Employee(employeeId, salary.mul(1 ether), now);
             employees[employeeId] = employeeTemp;
-            totalEmployee = totalEmployee.add(1);
-            employeesListArr.push(employeeId);
             totalSalary = totalSalary.add(employees[employeeId].salary);
             NewEmployeeIsNull(employeeId);
         }else {
@@ -120,6 +141,13 @@ contract Payroll is Ownable {
         _paySurplusWages(employee);
         totalSalary = totalSalary.sub(employees[employeeId].salary);
         delete employees[employeeId];
+        var (repeat, index) = _isRepeatEmployee(employeeId);
+        uint len = employeesListArr.length;
+        delete employeesListArr[index];
+        if (repeat && index < len) {
+            employeesListArr[index] = employeesListArr[len - 1];
+            employeesListArr.length--;
+        }
         totalEmployee = totalEmployee.sub(1);
         UpdateInfo(employeeId);
     }

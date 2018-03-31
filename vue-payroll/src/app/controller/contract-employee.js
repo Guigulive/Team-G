@@ -53,6 +53,13 @@ export default {
                 }
                 getMyWage.stopWatching();
             });
+        }).catch((err) => {
+            console.log(err);
+            if (!!err) {
+                _this.$Message.error('合约没钱啦！！老板跑路啦~~还没有到领取工资的时间哦~~!');
+                _this.getWageLoading = false;
+                return;
+            }
         });
     }
 };
