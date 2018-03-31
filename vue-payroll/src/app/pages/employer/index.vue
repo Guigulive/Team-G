@@ -4,6 +4,7 @@ import contractInfo from '@controller/contract-info';
 import modalHtml from './Modal-html/';
 export default {
     name: 'employer',
+    props: ['web3', 'instance'],
     components: {},
     data() {
         return {
@@ -93,13 +94,7 @@ export default {
             employeeData: []
         };
     },
-    watch: {
-        leftMenuAcName(newVal, oldVal) {
-            // if (newVal === 'contractInfo') {
-            //     contractInfo.init(this);
-            // }
-        }
-    },
+    watch: {},
     mounted() {
         this.init();
     },
