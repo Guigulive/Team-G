@@ -2,6 +2,12 @@ import {BigNumber} from 'bignumber.js';
 import moment from 'moment';
 import _ from 'lodash';
 export default {
+    /**
+     * [getInfo] 获取员工以及合约信息
+     *
+     * @author 花夏 liubiao@itoxs.com
+     * @param  {Object} _this [调用的当前对象]
+     */
     getInfo(_this) {
         let web3 = _this.web3;
         let index = 0;
@@ -16,6 +22,13 @@ export default {
             _this.employee.lastPayDay = lastPayDay;
         });
     },
+
+    /**
+     * [getMyWages]  获取自己的薪资
+     *
+     * @author 花夏 liubiao@itoxs.com
+     * @param  {Object} _this [调用的当前对象]
+     */
     getMyWages(_this) {
         let index = 0;
         let address = _this.employeeData[index].address;
