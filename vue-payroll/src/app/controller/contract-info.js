@@ -66,6 +66,7 @@ export default {
                 if (!err) {
                     _this.info = [];
                     me.init(_this);
+                    _this.addLoading = false;
                 }
                 newFund.stopWatching();
             });
@@ -103,6 +104,7 @@ export default {
                         _this.addAddress = '';
                         _this.addSalary = '';
                         me.getEmployeeList(_this);
+                        _this.addEmpLoading = false;
                     }
                     newEmployeeIsNull.stopWatching();
                 });
@@ -167,6 +169,7 @@ export default {
                     if (!err) {
                         me.getEmployeeList(_this);
                     }
+                    _this.updateLoading = false;
                     updateInfo.stopWatching();
                 });
             });
@@ -193,6 +196,7 @@ export default {
                     if (!err) {
                         me.getEmployeeList(_this);
                     }
+                    _this.updateSalLoading = false;
                     updateInfo.stopWatching();
                 });
             });
@@ -210,6 +214,7 @@ export default {
     delEmployee(address, _this) {
         let Payroll = _this.Payroll;
         let me = this;
+        _this.delEmpLoading = true;
         Payroll.deployed().then((instance) => {
             instance.removeEmployee(address, _.assign({
                 from: _this.account
@@ -219,6 +224,7 @@ export default {
                     if (!err) {
                         me.getEmployeeList(_this);
                     }
+                    _this.delEmpLoading = false;
                     updateInfo.stopWatching();
                 });
             });

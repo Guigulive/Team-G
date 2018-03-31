@@ -8,6 +8,11 @@ export default {
     data() {
         return {
             loading: false,
+            addLoading: false,
+            addEmpLoading: false,
+            delEmpLoading: false,
+            updateLoading: false,
+            updateSalLoading: false,
             delModal: false,
             leftMenuAcName: 'contractInfo',
             info: [],
@@ -36,13 +41,14 @@ export default {
                 {
                     title: '操作',
                     key: 'action',
-                    width: 220,
+                    width: 250,
                     render: (h, params) => {
                         return h('div', [
                             h('Button', {
                                 props: {
                                     type: 'error',
-                                    size: 'small'
+                                    size: 'small',
+                                    loading: this.delEmpLoading
                                 },
                                 style: {
                                     marginRight: '5px'
@@ -56,7 +62,8 @@ export default {
                             h('Button', {
                                 props: {
                                     type: 'info',
-                                    size: 'small'
+                                    size: 'small',
+                                    loading: this.updateLoading
                                 },
                                 style: {
                                     marginRight: '5px'
@@ -70,7 +77,8 @@ export default {
                             h('Button', {
                                 props: {
                                     type: 'success',
-                                    size: 'small'
+                                    size: 'small',
+                                    loading: this.updateSalLoading
                                 },
                                 on: {
                                     click: () => {
@@ -119,6 +127,7 @@ export default {
                     if (this.value <= 0) {
                         this.$Message.error('不能小于1吧?!');
                     }
+                    this.addLoading = true;
                     contractInfo.addFund(this.value, this);
                 }
             });
@@ -146,6 +155,7 @@ export default {
                 this.$Message.error('月薪必须大于0!');
                 return;
             }
+            this.addEmpLoading = true;
             contractInfo.addEmpolyee(this.addAddress, +this.addSalary, this);
         },
         getEmployeeList() {
@@ -170,6 +180,7 @@ export default {
                     });
                 },
                 onOk: () => {
+                    this.updateLoading = true;
                     contractInfo.changePaymentAddress(params.row.address, this.tempAddress, params.index, me);
                     me.tempAddress = '';
                 },
@@ -198,6 +209,7 @@ export default {
                     });
                 },
                 onOk: () => {
+                    this.updateSalLoading = true;
                     contractInfo.updateEmployeeSalary(address, this.tempSalary, me);
                     me.tempSalary = 1;
                 },
