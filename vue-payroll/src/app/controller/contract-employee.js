@@ -11,6 +11,11 @@ export default {
     getInfo(_this) {
         let web3 = _this.web3;
         let index = 0;
+        let employee = _this.employeeData[index];
+        if (!employee) {
+            _this.$Message.error('不存在的员工账号!');
+            return;
+        }
         let address = _this.employeeData[index].address;
         _this.employee.address = address;
         let balance = web3.eth.getBalance(address);
@@ -30,14 +35,24 @@ export default {
      * @param  {Object} _this [调用的当前对象]
      */
     getMyWages(_this) {
+        let me = this;
         let index = 0;
+        let employee = _this.employeeData[index];
+        if (!employee) {
+            _this.$Message.error('不存在的员工账号!');
+            return;
+        }
         let address = _this.employeeData[index].address;
         _this.instance.getMyWage(_.assign({
             from: address
         }, _this.gas)).then((res) => {
-            setTimeout(() => {
-                self.location.reload();
-            }, 1000);
+            var getMyWage = _this.instance.GetMyWage((err, result) => {
+                if (!err) {
+                    _this.getWageLoading = false;
+                    me.getInfo(_this);
+                }
+                getMyWage.stopWatching();
+            });
         });
     }
 };

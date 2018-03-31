@@ -10,6 +10,7 @@ export default {
         return {
             info: [],
             employeeData: [],
+            getWageLoading: false,
             employee: {
                 address: '',
                 lastPayDay: '',
@@ -35,6 +36,7 @@ export default {
             contractInfo.getEmployeeList(this);
         },
         getMyWages() {
+            this.getWageLoading = true;
             Employee.getMyWages(this);
         }
     }

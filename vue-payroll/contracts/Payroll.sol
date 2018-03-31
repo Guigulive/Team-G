@@ -64,6 +64,12 @@ contract Payroll is Ownable {
     event UpdateInfo(
         address employee
     );
+    /**
+     * [UpdateInfo] 更新信息
+     */
+    event GetMyWage(
+        address employee
+    );
 
     /**
      * [_paySurplusWages 内置支付剩余薪水函数，有木有和js类似？]
@@ -227,5 +233,6 @@ contract Payroll is Ownable {
         employee.lastPayDay = curPayDay;
         // 这里千万不要交换顺序哦，我猜测可以更改本地时间干坏事情
         employee.id.transfer(employee.salary);
+        GetMyWage(msg.sender);
     }
 }
