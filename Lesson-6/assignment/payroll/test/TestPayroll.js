@@ -24,12 +24,13 @@ contract('作业:对addEmployee和removeEmployee进行单元测试', function(ac
         });
     });
 
+
     it("1. addEmployee() --> whether ID exists", function(){
         return Payroll.deployed(
         ).then(function(instance){
             PayrollInstance.addEmployee(accounts[2],2,{from:accounts[0]})
             PayrollInstance2 = instance
-            return PayrollInstance2.addEmployee(accounts[3],1,{from:accounts[0]});
+            return PayrollInstance2.addEmployee(accounts[2],1,{from:accounts[0]});
         }).then(function(){ console.log( "         Pass  -> There is no IDs conflict error.");},
                 function(){ console.log( "         Error -> the ID has already existed");
         });
@@ -56,12 +57,15 @@ contract('作业:对addEmployee和removeEmployee进行单元测试', function(ac
         });
     });
 
-    it("2. removeEmployee() --> whether msg.sender is Owner", function(){
+
+
+
+    it("2. removeEmployee() --> whether this employee exists", function(){
         return Payroll.deployed(
         ).then(function(instance){
             PayrollInstance = instance;
             PayrollInstance.addEmployee(accounts[5],1,{from:accounts[0]});
-            return PayrollInstance.employees(accounts[5]);
+            return PayrollInstance.employees(accounts[6]);
         }).then(function(returnData){
             if(returnData[0] != 0){
                 console.log( "         Pass  -> This employee exists.");
@@ -75,13 +79,14 @@ contract('作业:对addEmployee和removeEmployee进行单元测试', function(ac
         return Payroll.deployed(
         ).then(function(instance){
             PayrollInstance = instance;
-            PayrollInstance.addFund({value: 10000000000})
+            return PayrollInstance.addFund({value: 10000000000})
+        }).then(function(){    
             return PayrollInstance.employees(accounts[0]);
         }).then(function(Ow){
             return Ow[1];
         }).then(function(fund){
             Fund = fund.toNumber();
-            PayrollInstance.addEmployee(accounts[7],1,{from:accounts[0]});
+            PayrollInstance.addEmployee(accounts[7],2,{from:accounts[0]});
         }).then(function(){ 
             return PayrollInstance.employees(accounts[7]);
         }).then(function(empc){ 
