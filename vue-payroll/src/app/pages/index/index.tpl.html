@@ -1,0 +1,61 @@
+<div id="index" class="main">
+    <div class="search">
+        <Input
+            v-model="employeeAds"
+            size="large"
+            :clearable="true"
+            placeholder="请输入您的以太地址查询"
+            @on-enter="search">
+        </Input>
+        <Button
+            class="search-btn"
+            icon="ios-search"
+            type="primary"
+            :loading="loading"
+            :disabled="disabled"
+            @click="search">查询</Button>
+    </div>
+    <Card
+        class="result-card"
+        v-if="result !== -1">
+        <div
+            style="text-align:center"
+            v-if="result === 0">
+            <Icon type="android-alert" size="28" color="#ed3f14"></Icon>
+            <p>
+                该 {{employeeAds}} 地址不是一个员工地址哦~~😂
+            </p>
+        </div>
+        <div
+            class="success"
+            v-else>
+            <p slot="title">
+                <Icon type="document-text" color=""></Icon>
+                查询结果
+            </p>
+            <ul class="result-list">
+                <li>
+                    {{result.employeeAds.name}}:
+                    <a target="_blank">{{ result.employeeAds.value }}</a>
+                </li>
+                <li>
+                    {{result.salary.name}}:
+                    <a target="_blank">{{ result.salary.value }} ETH</a>
+                </li>
+                <li>
+                    {{result.lastPayDay.name}}:
+                    <a target="_blank">{{ result.lastPayDay.value }}</a>
+                </li>
+            </ul>
+        </div>
+    </Card>
+    <Col
+        v-if="loading"
+        class="search-spin-col"
+        span="8">
+        <Spin fix>
+            <Icon type="load-c" size=18 class="search-spin-icon-load"></Icon>
+            <div>加载中</div>
+        </Spin>
+    </Col>
+</div>

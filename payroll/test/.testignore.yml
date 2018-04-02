@@ -1,5 +1,0 @@
-# 添加需要忽略的测试文件，方便后期测试
-ignore:
-    # - addEmployee.test.js
-    # - removeEmployee.test.js
-    - getMyWage.test.js

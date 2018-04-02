@@ -3,12 +3,23 @@
 ### Started
 
 + `npm install`
-+ `truffle comple`
++ `truffle compile`
 + `truffle migration`
 
 #### 前端开发
 
 + `npm start`
+
+### 同远程保持一致
+
+```
+git fetch Team-G
+
+git checkout master
+
+git merge Team-G/master
+
+```
 
 #### 测试用例
 

@@ -1,0 +1,77 @@
+<div id="employer" class="main">
+    <Menu
+        class="left-menu"
+        :active-name="leftMenuAcName"
+        @on-select="selectLeftMenu">
+        <MenuItem name="contractInfo">
+            <Icon type="document-text"></Icon>
+            合约信息
+        </MenuItem>
+        <MenuItem name="employeeInfo">
+            <Icon type="person-stalker"></Icon>
+            所有员工({{employeeCount}})
+        </MenuItem>
+    </Menu>
+    <div
+        class="right-info">
+        <Card
+            class="card"
+            v-for="item in info"
+            :key="item.id"
+            v-if="leftMenuAcName === 'contractInfo'">
+            <p slot="title">{{item.name}}</p>
+            <p>
+                {{item.value}}
+                <Button
+                    type="primary"
+                    size="small"
+                    class="fr"
+                    v-if="item.isAddFund"
+                    @click="addFund">增加余额</Button>
+            </p>
+        </Card>
+        <div v-if="leftMenuAcName === 'employeeInfo'">
+            <div class="add-employee-info">
+                <Tag class="contract-info" color="green">{{balance}} ETH | {{runTimes}} 次</Tag>
+                <Input
+                    class="add-address"
+                    size="large"
+                    :clearable="true"
+                    @on-enter="addEmpolyee"
+                    v-model="addAddress"
+                    placeholder="请输入要添加的员工地址">
+                </Input>
+                <Input
+                    class="add-salary"
+                    size="large"
+                    :clearable="true"
+                    @on-enter="addEmpolyee"
+                    v-model="addSalary"
+                    placeholder="请输入要添加的员工月薪">
+                    <Button
+                        slot="append"
+                        @click="addEmpolyee">添加员工</Button>
+                </Input>
+            </div>
+            <Table
+                border
+                height="300"
+                :columns="columns1"
+                :data="employeeData">
+                </Table>
+            <Modal v-model="delModal" width="360">
+                <p slot="header" style="color:#f60;text-align:center">
+                    <Icon type="information-circled"></Icon>
+                    <span>删除确认</span>
+                </p>
+                <div style="text-align:center">
+                    <p>{{delAddress}}</p>
+                    <p>您确定要删除该地址?</p>
+                </div>
+                <div slot="footer">
+                    <Button type="error" size="large" long @click="del">删除</Button>
+                </div>
+            </Modal>
+        </div>
+    </div>
+</div>
