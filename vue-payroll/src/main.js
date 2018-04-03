@@ -37,17 +37,20 @@ window.addEventListener('load', function() {
     window.web3.eth.getAccounts((error, accounts) => {
         Payroll.deployed().then((instance) => {
             window.instance = instance;
-            window.account = accounts[0];
-            return instance;
-        }).then(() => {
-            /* eslint-disable no-new */
-            new Vue({
-                el: '#app',
-                router,
-                template: '<App/>',
-                components: {
-                    App
-                }
+            instance.owner.call().then((res) => {
+                // 使用实际的合约所有者地址为account
+                window.account = res;
+                return instance;
+            }).then(() => {
+                /* eslint-disable no-new */
+                new Vue({
+                    el: '#app',
+                    router,
+                    template: '<App/>',
+                    components: {
+                        App
+                    }
+                });
             });
         });
     });

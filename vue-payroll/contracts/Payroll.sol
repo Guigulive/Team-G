@@ -122,6 +122,8 @@ contract Payroll is Ownable {
             Employee memory employeeTemp = Employee(employeeId, salary.mul(1 ether), now);
             employees[employeeId] = employeeTemp;
             totalSalary = totalSalary.add(employees[employeeId].salary);
+            totalEmployee = totalEmployee.add(1);
+            employeesListArr.push(employeeId);
             NewEmployeeIsNull(employeeId);
         }else {
             NewEmployeeExist(employeeId);

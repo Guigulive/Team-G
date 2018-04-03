@@ -128,13 +128,17 @@ export default {
         _this.instance.checkInfo.call().then((res) => {
             _this.balance = _this.web3.fromWei(new BigNumber(res[0]).toNumber());
             _this.runTimes = new BigNumber(res[1]).toNumber();
-            _this.employeeCount = new BigNumber(res[2]).toNumber();
+            _this.employeeCount = res[2].toNumber();
             return _this;
         }).then((result) => {
             let employeeCount = result.employeeCount;
             var employeesListArr = [];
             for (var i = 0; i < employeeCount; i++) {
-                employeesListArr.push(_this.instance.checkEmployee.call(i));
+                // 凡是需要owner时候需要加上 from: _this.account
+                employeesListArr.push(_this.instance.checkEmployee.call(i,
+                    {
+                        from: _this.account
+                    }));
             }
             return employeesListArr;
         }).then((res) => {
