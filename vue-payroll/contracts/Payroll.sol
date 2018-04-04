@@ -169,6 +169,20 @@ contract Payroll is Ownable {
     }
 
     /**
+     * [checkEmployee] 检查员工信息
+     *
+     * @author 花夏 liubiao@itoxs.com
+     * @param  ads [地址]
+     * @return      [员工所有信息]
+     */
+    function checkEmployeeOfAds(address ads) public view employeeExist(ads) returns (address employeeId, uint salary, uint lastPayDay) {
+        employeeId = ads;
+        var employee = employees[employeeId];
+        salary = employee.salary;
+        lastPayDay = employee.lastPayDay;
+    }
+
+    /**
      * [checkInfo] 获取合约信息
      *
      * @author 花夏 liubiao@itoxs.com
