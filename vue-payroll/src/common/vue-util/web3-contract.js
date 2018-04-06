@@ -21,6 +21,7 @@ export default {
                 Vue.prototype.account = accounts[0];
             });
             Payroll.setProvider(results.web3.currentProvider);
+            Vue.prototype.globalSpinShow = false;
         }).catch((res) => {
             console.log('Error finding web3.');
         });

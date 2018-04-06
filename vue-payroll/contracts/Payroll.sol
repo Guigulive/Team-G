@@ -30,6 +30,7 @@ contract Payroll is Ownable {
     // 使用map结构方便查询降低gas
     mapping (address => Employee) public employees;
     address[] employeesListArr;
+
     /**
      * 定义一个modifier 判断是否包含这个员工
      */
@@ -40,13 +41,36 @@ contract Payroll is Ownable {
     }
 
     /**
-     *  根据传入的 msg.sender判断是否具有操作权限
+     * [NewEmployeeExist] 新增一个已存在的员工
      */
-    modifier isEmpolyee(address employeeId) {
-        var employee = employees[employeeId];
-        assert(employee.id == employeeId);
-        _;
-    }
+    event NewEmployeeExist(
+        address employee
+    );
+    /**
+     * [NewEmployeeIsNull] 新增一个不存在的员工
+     */
+    event NewEmployeeIsNull(
+        address employee
+    );
+    /**
+     * [NewFund] 增加余额
+     */
+    event NewFund(
+        uint balance
+    );
+    /**
+     * [UpdateInfo] 更新信息
+     */
+    event UpdateInfo(
+        address employee
+    );
+    /**
+     * [UpdateInfo] 更新信息
+     */
+    event GetMyWage(
+        address employee
+    );
+
     /**
      * [_paySurplusWages 内置支付剩余薪水函数，有木有和js类似？]
      * @author 花夏 liubiao@itoxs.com
@@ -62,18 +86,49 @@ contract Payroll is Ownable {
     }
 
     /**
+     * [_isRepeatEmployee] 判断是否存在
+     *
+     * @author 花夏 liubiao@itoxs.com
+     * @param      ads [传入判断地址]
+     * @return         [返回存在与否以及下标]
+     */
+    function _isRepeatEmployee(address ads) private view returns(bool repeat, uint index) {
+        uint len = employeesListArr.length;
+        uint num = 0;
+        uint _index;
+        for (uint i = 0; i < len; i++) {
+            if (employeesListArr[i] != ads) {
+                num++;
+            } else {
+                _index = i;
+            }
+        }
+        repeat = (num != len);
+        index =_index;
+        
+    }
+
+    /**
      * [addEmployee 添加一个新员工地址]
      * @author 花夏 liubiao@itoxs.com
      * @param  employeeId [新员工地址]
      * @param  salary    [应付的月薪]
      */
     function addEmployee(address employeeId, uint salary) public onlyOwner {
-        // 添加员工
-        Employee memory employee = Employee(employeeId, salary * 1 ether, now);
-        employees[employeeId] = employee;
-        totalSalary += employee.salary;
-        employeesListArr.push(employeeId);
-        totalEmployee++;
+        var employee = employees[employeeId];
+        // 如果不存在
+        if (employee.id == 0x0) {
+            // 添加员工
+            Employee memory employeeTemp = Employee(employeeId, salary.mul(1 ether), now);
+            employees[employeeId] = employeeTemp;
+            totalSalary = totalSalary.add(employees[employeeId].salary);
+            totalEmployee = totalEmployee.add(1);
+            employeesListArr.push(employeeId);
+            NewEmployeeIsNull(employeeId);
+        }else {
+            NewEmployeeExist(employeeId);
+            revert();
+        }
     }
 
     /**
@@ -88,7 +143,15 @@ contract Payroll is Ownable {
         _paySurplusWages(employee);
         totalSalary = totalSalary.sub(employees[employeeId].salary);
         delete employees[employeeId];
+        var (repeat, index) = _isRepeatEmployee(employeeId);
+        uint len = employeesListArr.length;
+        delete employeesListArr[index];
+        if (repeat && index < len) {
+            employeesListArr[index] = employeesListArr[len - 1];
+            employeesListArr.length--;
+        }
         totalEmployee = totalEmployee.sub(1);
+        UpdateInfo(employeeId);
     }
 
     /**
@@ -106,6 +169,20 @@ contract Payroll is Ownable {
     }
 
     /**
+     * [checkEmployee] 检查员工信息
+     *
+     * @author 花夏 liubiao@itoxs.com
+     * @param  ads [地址]
+     * @return      [员工所有信息]
+     */
+    function checkEmployeeOfAds(address ads) public view employeeExist(ads) returns (address employeeId, uint salary, uint lastPayDay) {
+        employeeId = ads;
+        var employee = employees[employeeId];
+        salary = employee.salary;
+        lastPayDay = employee.lastPayDay;
+    }
+
+    /**
      * [checkInfo] 获取合约信息
      *
      * @author 花夏 liubiao@itoxs.com
@@ -114,7 +191,6 @@ contract Payroll is Ownable {
     function checkInfo() public view returns (uint balance, uint runTimes, uint employeeCount) {
         balance = this.balance;
         employeeCount = totalEmployee;
-
         if (totalSalary > 0) {
             runTimes = getPayTimes();
         }
@@ -132,11 +208,12 @@ contract Payroll is Ownable {
         var employee = employees[ads];
         // 我已经在支付函数里做了判断拉~~
         _paySurplusWages(employee);
-        totalSalary -= employee.salary;
+        totalSalary = totalSalary.sub(employee.salary);
         // employees[ads].id = ads;
-        employees[ads].salary = sly * 1 ether;
+        employees[ads].salary = sly.mul(1 ether);
         employees[ads].lastPayDay = now;
-        totalSalary += employees[ads].salary;
+        totalSalary = totalSalary.add(employees[ads].salary);
+        UpdateInfo(ads);
     }
 
     /**
@@ -155,6 +232,7 @@ contract Payroll is Ownable {
         Employee memory employeeTemp = Employee(ads, employee.salary, now);
         employees[ads] = employeeTemp;
         delete employees[employee.id];
+        UpdateInfo(ads);
     }
     
     /**
@@ -164,6 +242,7 @@ contract Payroll is Ownable {
      */
     function addFund() public payable returns(uint) {
         // this 指向合约对象
+        NewFund(this.balance);
         return this.balance;
     }
 
@@ -173,7 +252,7 @@ contract Payroll is Ownable {
      * @return [返回合约地址还能支付薪水的次数]
      */
     function getPayTimes() view public returns(uint) {
-        uint times = totalSalary == 0 ? 0 : this.balance / totalSalary;
+        uint times = totalSalary == 0 ? 0 : this.balance.div(totalSalary);
         return times;
     }
 
@@ -198,5 +277,6 @@ contract Payroll is Ownable {
         employee.lastPayDay = curPayDay;
         // 这里千万不要交换顺序哦，我猜测可以更改本地时间干坏事情
         employee.id.transfer(employee.salary);
+        GetMyWage(msg.sender);
     }
 }

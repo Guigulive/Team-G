@@ -38,6 +38,13 @@ npm run dev
             ├──GET // 本地mock get
             └──POST // 本地mock post
 
+### 保留关键字 智能合约需要用到的全局变量
+
+`web3`
+`instance`
+`gas`
+`account`
+
 ### 支持功能
 
     1.本地mock： 更改config/index.js : mockLocal: 1, // 1為本地 \ 0為代理 remote中可配置代理地址

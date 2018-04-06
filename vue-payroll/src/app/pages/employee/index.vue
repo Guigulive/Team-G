@@ -4,11 +4,13 @@ import Employee from '@controller/contract-employee';
 import contractInfo from '@controller/contract-info';
 export default {
     name: 'employee',
+    props: ['web3', 'instance', 'gas', 'account'],
     components: {},
     data() {
         return {
             info: [],
             employeeData: [],
+            getWageLoading: false,
             employee: {
                 address: '',
                 lastPayDay: '',
@@ -30,13 +32,11 @@ export default {
     },
     methods: {
         init() {
-            var me = this;
-            window.addEventListener('load', function() {
-                contractInfo.init(me);
-                contractInfo.getEmployeeList(me);
-            });
+            contractInfo.init(this);
+            contractInfo.getEmployeeList(this);
         },
         getMyWages() {
+            this.getWageLoading = true;
             Employee.getMyWages(this);
         }
     }

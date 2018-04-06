@@ -26,6 +26,7 @@
                     type="primary"
                     size="small"
                     class="fr"
+                    :loading="addLoading"
                     v-if="item.isAddFund"
                     @click="addFund">增加余额</Button>
             </p>
@@ -50,6 +51,7 @@
                     placeholder="请输入要添加的员工月薪">
                     <Button
                         slot="append"
+                        :loading="addEmpLoading"
                         @click="addEmpolyee">添加员工</Button>
                 </Input>
             </div>

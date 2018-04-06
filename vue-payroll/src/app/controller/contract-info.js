@@ -3,13 +3,8 @@ import moment from 'moment';
 import _ from 'lodash';
 export default {
     getInfo(_this) {
-        var me = this;
-        window.addEventListener('load', function() {
-            me.init(_this);
-            me.getEmployeeList(_this);
-        });
-        // todo 路由切换做单独判断
-        // me.init(_this);
+        this.init(_this);
+        this.getEmployeeList(_this);
     },
 
     /**
@@ -20,34 +15,22 @@ export default {
      */
     init(_this) {
         this.self = _this;
-        let Payroll = _this.Payroll;
-        let web3 = _this.web3;
-        let PayrollInstance;
-        // _this.info = [];
-        Payroll.deployed().then((instance) => {
-            PayrollInstance = instance;
+        _this.info.push({
+            name: '合约地址',
+            value: _this.instance.address
+        });
+        _this.instance.addFund.call().then((res) => {
             _this.info.push({
-                name: '合约地址',
-                value: PayrollInstance.address
+                name: '合约剩余总额 / ETH',
+                value: _this.web3.fromWei(new BigNumber(res).toNumber()),
+                isAddFund: true
             });
-            return this;
-        }).then((result) => {
-            PayrollInstance.addFund.call().then((res) => {
-                _this.info.push({
-                    name: '合约剩余总额 / ETH',
-                    value: web3.fromWei(new BigNumber(res).toNumber()),
-                    isAddFund: true
-                });
+        });
+        _this.instance.getPayTimes.call().then((res) => {
+            _this.info.push({
+                name: '剩余最多支付次数 / 次',
+                value: new BigNumber(res).toNumber()
             });
-            return this;
-        }).then((result) => {
-            PayrollInstance.getPayTimes.call().then((res) => {
-                _this.info.push({
-                    name: '剩余最多支付次数 / 次',
-                    value: new BigNumber(res).toNumber()
-                });
-            });
-            return this;
         });
     },
 
@@ -60,18 +43,22 @@ export default {
      */
     addFund(value, _this) {
         var me = this;
-        let Payroll = me.self.Payroll;
-        let web3 = me.self.web3;
-        Payroll.deployed().then((instance) => {
-            instance.addFund(_.assign({
-                from: me.self.account,
-                value: web3.toWei(value)
-            }, _this.GAS)).then(() => {
-                setTimeout(() => {
-                    self.location.reload();
-                }, 1000);
-            });
-            return this;
+        var newFund = _this.instance.NewFund((err, result) => {
+            if (!err) {
+                _this.info = [];
+                me.init(_this);
+                _this.addLoading = false;
+            }
+            newFund.stopWatching();
+        });
+        _this.instance.addFund(_.assign({
+            from: _this.account,
+            value: _this.web3.toWei(value)
+        }, _this.gas)).catch((err) => {
+            if (!err) {
+                _this.$Message.error('你的账户可能不是管理员账户,请检查!');
+                _this.addLoading = false;
+            }
         });
     },
 
@@ -84,17 +71,51 @@ export default {
      * @param  {Object} _this   [调用的当前对象]
      */
     addEmpolyee(address, salary, _this) {
-        let Payroll = _this.Payroll;
-        Payroll.deployed().then((instance) => {
-            instance.addEmployee(address, salary, _.assign({
-                from: _this.account
-            }, _this.GAS)).then(() => {
-                setTimeout(() => {
-                    self.location.reload();
-                }, 1000);
+        let me = this;
+        if (this.checkEmployeeReapt(address, _this)) {
+            _this.$Message.error('该地址已存在!请不要重复添加');
+            _this.addAddress = '';
+            _this.addSalary = '';
+            _this.addEmpLoading = false;
+            return;
+        }
+        _this.instance.addEmployee(address, +salary, _.assign({
+            from: _this.account
+        }, _this.gas)).then((res) => {
+            var newEmployeeIsNull = _this.instance.NewEmployeeIsNull((err, result) => {
+                if (!err) {
+                    me.getEmployeeList(_this);
+                }
+                newEmployeeIsNull.stopWatching();
             });
-            return this;
+            _this.addAddress = '';
+            _this.addSalary = '';
+            _this.addEmpLoading = false;
+        }).catch((err) => {
+            if (!!err) {
+                _this.$Message.error('添加员工失败,请检查!');
+                _this.addAddress = '';
+                _this.addSalary = '';
+                me.getEmployeeList(_this);
+                _this.addEmpLoading = false;
+            }
         });
+    },
+
+    /**
+     * [checkEmployeeReapt]  判断数组列表里面是否包含该地址
+     *
+     * @author 花夏 liubiao@itoxs.com
+     * @param  {String} ads   [查找地址]
+     * @param  {Object} _this [当前vue对象]
+     * @return {Boolen}       [是否重复]
+     */
+    checkEmployeeReapt(ads, _this) {
+        let employeeList = _this.employeeData;
+        var res = employeeList.filter(function(item, index, array) {
+            return item.address === ads;
+        });
+        return res.length > 0;
     },
 
     /**
@@ -104,32 +125,31 @@ export default {
      * @param  {Object} _this [调用的当前对象]
      */
     getEmployeeList(_this) {
-        let Payroll = _this.Payroll;
-        let web3 = _this.web3;
-        Payroll.deployed().then((instance) => {
-            instance.checkInfo.call().then((res) => {
-                _this.balance = web3.fromWei(new BigNumber(res[0]).toNumber());
-                _this.runTimes = new BigNumber(res[1]).toNumber();
-                _this.employeeCount = new BigNumber(res[2]).toNumber();
-                return _this;
-            }).then((result) => {
-                let employeeCount = result.employeeCount;
-                var employeesListArr = [];
-                for (var i = 0; i < employeeCount; i++) {
-                    employeesListArr.push(instance.checkEmployee.call(i));
-                }
-                return employeesListArr;
-            }).then((res) => {
-                Promise.all(res).then(values => {
-                    let employees = values.map(value => ({
-                        address: value[0],
-                        salary: web3.fromWei(new BigNumber(value[1]).toNumber()),
-                        lastPayDay: moment(new Date(new BigNumber(value[2]).toNumber()) * 1000).format('LLLL')
+        _this.instance.checkInfo.call().then((res) => {
+            _this.balance = _this.web3.fromWei(new BigNumber(res[0]).toNumber());
+            _this.runTimes = new BigNumber(res[1]).toNumber();
+            _this.employeeCount = res[2].toNumber();
+            return _this;
+        }).then((result) => {
+            let employeeCount = result.employeeCount;
+            var employeesListArr = [];
+            for (var i = 0; i < employeeCount; i++) {
+                // 凡是需要owner时候需要加上 from: _this.account
+                employeesListArr.push(_this.instance.checkEmployee.call(i,
+                    {
+                        from: _this.account
                     }));
-                    _this.employeeData = employees;
-                });
+            }
+            return employeesListArr;
+        }).then((res) => {
+            Promise.all(res).then(values => {
+                let employees = values.map(value => ({
+                    address: value[0],
+                    salary: _this.web3.fromWei(new BigNumber(value[1]).toNumber()),
+                    lastPayDay: moment(new Date(new BigNumber(value[2]).toNumber()) * 1000).format('LLLL')
+                }));
+                _this.employeeData = employees;
             });
-            return this;
         });
     },
 
@@ -143,34 +163,83 @@ export default {
      * @param  {Object} _this      [传入的对象]
      */
     changePaymentAddress(initialAds, address, index, _this) {
-        let Payroll = _this.Payroll;
-        Payroll.deployed().then((instance) => {
-            instance.changePaymentAddress(initialAds, address, index, _.assign({
-                from: _this.account
-            }, _this.GAS));
-            return instance;
-        });
-    },
-    // todo 不是owner
-    // Error: VM Exception while processing transaction: invalid opcode
-    updateEmployeeSalary(address, tempSalary, _this) {
-        let Payroll = _this.Payroll;
-        Payroll.deployed().then((instance) => {
-            instance.updateEmployeeMsg(address, +tempSalary, _.assign({
-                from: _this.account
-            }, _this.GAS));
-            return instance;
-        });
-    },
-    delEmployee(address, _this) {
-        let Payroll = _this.Payroll;
-        Payroll.deployed().then((instance) => {
-            instance.removeEmployee(address, _.assign({
-                from: _this.account
-            }, _this.GAS)).then((res) => {
-                _this.delModal = false;
+        let me = this;
+        _this.instance.changePaymentAddress(initialAds, address, index, _.assign({
+            from: _this.account
+        }, _this.gas)).then((res) => {
+            var updateInfo = _this.instance.UpdateInfo((err, result) => {
+                if (!err) {
+                    me.getEmployeeList(_this);
+                }
+                _this.updateLoading = false;
+                updateInfo.stopWatching();
             });
-            return instance;
+        }).catch((err) => {
+            if (!!err) {
+                _this.$Message.error('更新地址失败,可能是合约没钱了,请检查!');
+                _this.updateLoading = false;
+            }
+        });
+    },
+
+    /**
+     * [updateEmployeeSalary]  更新员工月薪
+     *
+     * @author 花夏 liubiao@itoxs.com
+     * @param  {String} address    [员工地址]
+     * @param  {Number} tempSalary [员工新的月薪]
+     * @param  {Object} _this      [当前对象]
+     */
+    updateEmployeeSalary(address, tempSalary, _this) {
+        let me = this;
+        _this.instance.updateEmployeeMsg(address, +tempSalary, _.assign({
+            from: _this.account
+        }, _this.gas)).then((res) => {
+            var updateInfo = _this.instance.UpdateInfo((err, result) => {
+                if (!err) {
+                    me.getEmployeeList(_this);
+                }
+                _this.updateSalLoading = false;
+                updateInfo.stopWatching();
+            });
+        }).catch((err) => {
+            if (!!err) {
+                _this.$Message.error('更新月薪失败,可能是合约没钱了,请检查!');
+                _this.updateSalLoading = false;
+            }
+        });
+    },
+
+    /**
+     * [delEmployee]  删除一个员工
+     *
+     * @author 花夏 liubiao@itoxs.com
+     * @param  {String} address [员工地址]
+     * @param  {Object} _this   [当前对象]
+     */
+    delEmployee(address, _this) {
+        let me = this;
+        _this.delEmpLoading = true;
+        _this.delModal = false;
+        _this.instance.removeEmployee(address, _.assign({
+            from: _this.account
+        }, _this.gas)).then((res) => {
+            var updateInfo = _this.instance.UpdateInfo((err, result) => {
+                if (!err) {
+                    me.getEmployeeList(_this);
+                }
+                _this.delEmpLoading = false;
+                updateInfo.stopWatching();
+            });
+        }).catch((err) => {
+            if (!!err) {
+                _this.$Message.error({
+                    content: '删除员工失败,可能是合约没钱了,请检查!',
+                    onClose() {
+                        _this.delEmpLoading = false;
+                    }
+                });
+            }
         });
     }
 };
